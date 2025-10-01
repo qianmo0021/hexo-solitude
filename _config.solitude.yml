@@ -549,7 +549,7 @@ footer:
        导航页面: https://dh.lxb.icu
 
   # 随机友链
-  randomlink: false # 随机友链
+  randomlink: true # 随机友链
 
   # 备案
   beian:

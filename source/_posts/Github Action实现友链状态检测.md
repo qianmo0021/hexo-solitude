@@ -8,7 +8,7 @@ categories:
   - 教程
 cover: >-
   https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/bc9476f6447b54574652a3ba9ab787d806e1dcaf76c1d0e036d5f27b0d82f4aaafe9037ce45e7910d250cc0987456fe1?pictype=scale&from=30113&version=3.3.3.3&fname=p0%283%29.png&size=1000
-
+abbrlink: '6461'
 date: 2025-09-29 11:05:48
 ---
 # Github Action实现友链状态检测

@@ -14,7 +14,7 @@ timezone: Asia/Shanghai # 时区（请自行查询）
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
 url: http://example.com
-permalink: :year/:month/:day/:title/
+permalink: posts/:abbrlink/
 permalink_defaults:
 pretty_urls:
   trailing_index: true # Set to false to remove trailing 'index.html' from permalinks
@@ -166,15 +166,21 @@ hexo_safego:
   # 域名白名单
   whitelist:
     domain_whitelist:           # 允许的白名单域名
-      - "qyliu.top"
       - "liushen.fun"
   # 页面外观设置
   appearance:
-    avatar: /img/blog.svg    # 头像路径
+    avatar: /img/logos.svg    # 头像路径
     title: "李小白"            # 页面标题
     subtitle: "安全中心"         # 页面副标题
     darkmode: true              # 是否启用深色模式
     countdowntime: 6           # 倒计时秒数
   # 调试设置
   debug:
-    enable: true               # 启用调试模式
+    enable: false               # 启用调试模式
+
+
+
+# 文章链接转数字或字母：https://github.com/rozbo/hexo-abbrlink
+abbrlink:
+    alg: crc16   #算法： crc16(default) and crc32
+    rep: hex     #进制： dec(default) and hex: dec #输出进制：十进制和十六进制，默认为10进制。丨dec为十进制，hex为十六进制

@@ -9,7 +9,7 @@ categories:
   - 博客搭建
 cover: >-
   https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/819e000a34a53164513c50bc059b6f00ad6c12e814cdef7734cdf8b5b7da59babfdcc50b4895c5fb5ebabb0f321c88f3?pictype=scale&from=30113&version=3.3.3.3&fname=p0%206.png&size=1000
-
+abbrlink: fb3c
 date: 2025-09-23 13:05:48
 ---
 # 🚀 Hexo 博客部署到 GitHub + Cloudflare Pages 完整指南
