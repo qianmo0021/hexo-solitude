@@ -7,6 +7,7 @@ on:
 
 jobs:
   构建部署:
+    name: "构建与部署"  # 这是可视化名称，支持中文
     runs-on: ubuntu-latest  # 使用最新版Ubuntu系统
 
     steps:
