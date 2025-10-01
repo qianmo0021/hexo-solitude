@@ -6,8 +6,8 @@ on:
       - main  # 只在main分支推送时触发
 
 jobs:
-  build-deploy:  # 关键修改：只能用英文/数字/下划线
-    name: "构建与部署"  # 这是可视化名称，支持中文
+  build-deploy:  # 合法英文ID
+    name: "构建与部署"  # 中文可视化名称
     runs-on: ubuntu-latest
 
     steps:
@@ -24,10 +24,11 @@ jobs:
           cache: 'npm'
 
       # ---------- 安装依赖 ----------
-      - name: "安装系统依赖"
+      - name: "安装项目依赖"
         run: |
           npm install -g hexo-cli
-          npm install
+          npm install yamljs --save  # 显式安装缺失模块
+          npm install  # 安装package.json中的其他依赖
           sudo apt-get update
           sudo apt-get install -y jq curl
 
@@ -35,7 +36,7 @@ jobs:
       - name: "生成友链JSON数据"
         run: |
           node link.js
-          ls -la ./source/
+          ls -la ./source/  # 调试：验证文件生成
 
       - name: "上传友链数据到目标仓库"
         env:
@@ -48,6 +49,7 @@ jobs:
             
             echo "正在处理文件: $target_file"
             
+            # 检查文件是否已存在
             RESPONSE=$(curl -s \
               -H "Authorization: token $GH_TOKEN" \
               -H "Accept: application/vnd.github.v3+json" \
@@ -61,8 +63,10 @@ jobs:
               echo "文件不存在，执行创建操作"
             fi
             
+            # 编码文件内容
             CONTENT=$(base64 -w0 "$file_path")
             
+            # 构造请求数据
             REQUEST_DATA=$(jq -n \
               --arg msg "自动更新-$target_file-$(date +'%Y-%m-%d %H:%M:%S')" \
               --arg content "$CONTENT" \
@@ -73,6 +77,7 @@ jobs:
                 sha: $sha
               }')
             
+            # 执行API请求
             curl -X PUT \
               -H "Authorization: token $GH_TOKEN" \
               -H "Accept: application/vnd.github.v3+json" \
@@ -88,7 +93,7 @@ jobs:
       # ---------- Hexo构建部署 ----------
       - name: "构建Hexo站点"
         run: |
-          hexo bangumi -u
+          hexo bangumi -u  # 更新追番数据（可选）
           hexo clean
           hexo generate
 
@@ -98,4 +103,4 @@ jobs:
           github_token: ${{ secrets.GH_TOKEN }}
           publish_dir: ./public
           publish_branch: gh-pages
-          force_orphan: true
+          force_orphan: true  # 强制清空目标分支
