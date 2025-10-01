@@ -82,7 +82,7 @@ jobs:
             echo "File $target_path successfully updated"
           }
 
-          update_file "./solitude_flink_count.json"
+          update_file "./source/solitude_flink_count.json"
 
      
       # 步骤8：构建Hexo
