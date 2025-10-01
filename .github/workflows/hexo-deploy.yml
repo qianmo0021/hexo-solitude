@@ -1,126 +1,102 @@
-name: "🚀 Hexo 全自动部署（极速缓存版）"
+name: Deploy Hexo and Update Friend Links
 
 on:
   push:
-    branches: [ main ]
-  schedule:
-    - cron: "0 0 * * *"  # 每日UTC 0点自动构建（可选）
-
-env:
-  TZ: Asia/Shanghai
+    branches:
+      - main
 
 jobs:
-  deploy:
-    name: "🛠️ 构建与部署"
+  build-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
 
     steps:
-      # ========== 初始化阶段 ==========
-      - name: "🔍 检出代码"
+      # 步骤1：检出代码
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          submodules: recursive  # 如果主题是子模块需要此项
 
-      # ========== 缓存加速阶段 ==========
-      - name: "💾 缓存系统依赖"
-        id: cache-apt
-        uses: actions/cache@v3
-        with:
-          path: /var/cache/apt
-          key: ${{ runner.os }}-apt-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-apt-
-
-      - name: "💾 缓存Node模块"
-        id: cache-node
-        uses: actions/cache@v3
-        with:
-          path: |
-            node_modules
-            themes/**/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-
-      # ========== 依赖安装 ==========
-      - name: "⚡ 智能安装系统工具"
-        run: |
-          # 仅在缓存未命中时更新
-          if [ "${{ steps.cache-apt.outputs.cache-hit }}" != 'true' ]; then
-            sudo apt-get update -qq
-          fi
-
-          # 按需安装核心工具
-          for tool in jq curl git; do
-            if ! command -v $tool &>/dev/null; then
-              sudo apt-get install -y --no-install-recommends $tool
-            fi
-          done
-
-      - name: "📦 安装Node环境"
+      # 步骤2：设置Node.js环境
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20.x"
-          cache: npm  # 自动缓存npm包
+          node-version: 20
+          cache: 'npm'
 
-      - name: "🔧 安装项目依赖"
+      # 步骤3：安装依赖
+      - name: Install dependencies
         run: |
-          # 仅在node_modules不存在时安装
-          if [ ! -d "node_modules" ]; then
-            npm install -g hexo-cli
-            npm install yamljs --save
-            npm install --audit=false
-          fi
+          npm install -g hexo-cli
+          npm install
+          sudo apt-get update
+          sudo apt-get install -y jq curl
 
-      # ========== 友链处理 ==========
-      - name: "🛠️ 初始化友链数据"
+      # 步骤4：执行link.js脚本
+      - name: Run link.js script
+        run: node link.js
+
+      # 步骤5：提交link.js生成的文件到另一个仓库
+      - name: Update flink_count.json via API
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          mkdir -p source/_data
-          if [ ! -f "source/_data/link.yml" ]; then
-            echo "::warning::生成示例友链数据"
-            cat > source/_data/link.yml <<'EOF'
-            - name: "默认友链"
-              url: "https://example.com"
-              avatar: "/images/default.png"
-            EOF
-          fi
+          function update_file() {
+            local file_path=$1
+            local target_repo="qianmo0021/link"
+            local target_path=$(basename "$file_path")
+            
+            echo "Processing file: $target_path"
+            
+            RESPONSE=$(curl -s \
+              -H "Authorization: token $GH_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/$target_repo/contents/$target_path")
+            
+            if echo "$RESPONSE" | jq -e '.sha' >/dev/null 2>&1; then
+              SHA=$(echo "$RESPONSE" | jq -r '.sha')
+              echo "File exists, will update"
+            else
+              SHA=""
+              echo "File does not exist, will create"
+            fi
+            
+            CONTENT=$(base64 -w0 "$file_path")
+            
+            REQUEST_DATA=$(jq -n \
+              --arg msg "Auto-update $(target_path) $(date +'%Y-%m-%d %H:%M:%S')" \
+              --arg content "$CONTENT" \
+              --arg sha "$SHA" \
+              '{
+                message: $msg,
+                content: $content,
+                sha: $sha
+              }')
+            
+            curl -X PUT \
+              -H "Authorization: token $GH_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              -H "Content-Type: application/json" \
+              "https://api.github.com/repos/$target_repo/contents/$target_path" \
+              -d "$REQUEST_DATA"
+            
+            echo "File $target_path successfully updated"
+          }
 
-      - name: "🤝 生成友链JSON"
+          update_file "./solitude_flink_count.json"
+
+     
+      # 步骤8：构建Hexo
+      - name: Build Hexo
         run: |
-          echo "::group::📊 文件结构"
-          ls -la source/_data/
-          echo "::endgroup::"
-
-          if ! node link.js; then
-            echo "::error::生成友链数据失败"
-            exit 1
-          fi
-          ls -lh ./source/solitude_flink_count.json
-
-      # ========== Hexo构建 ==========
-      - name: "🏗️ 构建Hexo站点"
-        run: |
+          hexo bangumi -u
           hexo clean
-          hexo generate --debug
-          du -sh public  # 显示构建大小
+          hexo generate
 
-      # ========== 部署阶段 ==========
-      - name: "🚀 部署到GitHub Pages"
+      # 步骤9：部署到GitHub Pages
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GH_TOKEN }}
           publish_dir: ./public
           publish_branch: gh-pages
           force_orphan: true
-          user_name: "GitHub Actions"
-          user_email: "41898282+github-actions[bot]@users.noreply.github.com"
-
-      # ========== 通知阶段 ==========
-      - name: "📢 部署结果"
-        if: always()
-        run: |
-          if [ "${{ job.status }}" == "success" ]; then
-            echo "::notice::🎉 部署成功！"
-          else
-            echo "::error::❌ 部署失败"
-          fi
