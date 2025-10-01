@@ -1,0 +1,102 @@
+name: Deploy Hexo and Update Friend Links
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 步骤1：检出代码
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 步骤2：设置Node.js环境
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      # 步骤3：安装依赖
+      - name: Install dependencies
+        run: |
+          npm install -g hexo-cli
+          npm install
+          sudo apt-get update
+          sudo apt-get install -y jq curl
+
+      # 步骤4：执行link.js脚本
+      - name: Run link.js script
+        run: node link.js
+
+      # 步骤5：提交link.js生成的文件到另一个仓库
+      - name: Update flink_count.json via API
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          function update_file() {
+            local file_path=$1
+            local target_repo="qianmo0021/link"
+            local target_path=$(basename "$file_path")
+            
+            echo "Processing file: $target_path"
+            
+            RESPONSE=$(curl -s \
+              -H "Authorization: token $GH_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/$target_repo/contents/$target_path")
+            
+            if echo "$RESPONSE" | jq -e '.sha' >/dev/null 2>&1; then
+              SHA=$(echo "$RESPONSE" | jq -r '.sha')
+              echo "File exists, will update"
+            else
+              SHA=""
+              echo "File does not exist, will create"
+            fi
+            
+            CONTENT=$(base64 -w0 "$file_path")
+            
+            REQUEST_DATA=$(jq -n \
+              --arg msg "Auto-update $(target_path) $(date +'%Y-%m-%d %H:%M:%S')" \
+              --arg content "$CONTENT" \
+              --arg sha "$SHA" \
+              '{
+                message: $msg,
+                content: $content,
+                sha: $sha
+              }')
+            
+            curl -X PUT \
+              -H "Authorization: token $GH_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              -H "Content-Type: application/json" \
+              "https://api.github.com/repos/$target_repo/contents/$target_path" \
+              -d "$REQUEST_DATA"
+            
+            echo "File $target_path successfully updated"
+          }
+
+          update_file "./source/flink_count.json"
+
+     
+      # 步骤8：构建Hexo
+      - name: Build Hexo
+        run: |
+          hexo bangumi -u
+          hexo clean
+          hexo generate
+
+      # 步骤9：部署到GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+          publish_dir: ./public
+          publish_branch: gh-pages
+          force_orphan: true

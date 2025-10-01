@@ -1,0 +1,49 @@
+{
+    "name": "李小白",
+    "short_name": "李小白",
+    "theme_color": "#006a73",
+    "background_color": "#006a73",
+    "display": "fullscreen",
+    "scope": "/",
+    "start_url": "/",
+    "id": "/",
+    "icons": [
+      {
+        "src": "https://q1.qlogo.cn/g?b=qq&nk=648226460&s=640",
+        "sizes": "16x16",
+        "type": "image/png",
+        "purpose": "any"
+      },
+      {
+        "src": "https://q1.qlogo.cn/g?b=qq&nk=648226460&s=640",
+        "sizes": "16x16",
+        "type": "image/png",
+        "purpose": "maskable"
+      },
+      {
+        "src": "https://q1.qlogo.cn/g?b=qq&nk=648226460&s=640",
+        "sizes": "32x32",
+        "type": "image/png",
+        "purpose": "any"
+      },
+      {
+        "src": "https://q1.qlogo.cn/g?b=qq&nk=648226460&s=640",
+        "sizes": "32x32",
+        "type": "image/png",
+        "purpose": "maskable"
+      },
+      {
+        "src": "https://q1.qlogo.cn/g?b=qq&nk=648226460&s=640",
+        "sizes": "180x180",
+        "type": "image/png",
+        "purpose": "any"
+      },
+      {
+        "src": "https://q1.qlogo.cn/g?b=qq&nk=648226460&s=640",
+        "sizes": "180x180",
+        "type": "image/png",
+        "purpose": "maskable"
+      }
+    ],
+    "splash_pages": null
+}
