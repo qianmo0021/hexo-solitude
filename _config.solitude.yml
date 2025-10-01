@@ -21,7 +21,7 @@ site:
   name:
     class: text # text / i_class / img
     custom: 李小白 # Solitude / fas fa-ghost / /img/pwa/favicon.ico
-  icon: https://q1.qlogo.cn/g?b=qq&nk=648226460&s=640 # Site icon / 网站图标
+  icon: /img/logos.icu # Site icon / 网站图标
 # --------------------------- end ---------------------------
 
 # --------------------------- start ---------------------------
@@ -134,7 +134,7 @@ aside:
   # 信息卡
   my_card:
     author:
-      img: /img/logo.png # url
+      img: https://q1.qlogo.cn/g?b=qq&nk=648226460&s=640 # url
       sticker: # url, 24x24 size
     # 介绍 / Introduction
     description: 一人一酒一明月，<br >半醉半醒半浮生。
