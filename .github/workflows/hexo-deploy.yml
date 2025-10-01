@@ -6,101 +6,96 @@ on:
       - main  # 只在main分支推送时触发
 
 jobs:
-  构建部署:
+  build-deploy:  # 关键修改：只能用英文/数字/下划线
     name: "构建与部署"  # 这是可视化名称，支持中文
-    runs-on: ubuntu-latest  # 使用最新版Ubuntu系统
+    runs-on: ubuntu-latest
 
     steps:
       # ---------- 初始化步骤 ----------
       - name: "拉取仓库代码"
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # 获取完整提交历史
+          fetch-depth: 0
 
       - name: "设置Node.js环境"
         uses: actions/setup-node@v4
         with:
-          node-version: 20  # 使用Node.js 20版本
-          cache: 'npm'      # 启用npm缓存加速
+          node-version: 20
+          cache: 'npm'
 
       # ---------- 安装依赖 ----------
       - name: "安装系统依赖"
         run: |
-          npm install -g hexo-cli  # 全局安装Hexo命令行工具
-          npm install              # 安装项目依赖
-          sudo apt-get update      # 更新软件包列表
-          sudo apt-get install -y jq curl  # 安装jq(JSON处理)和curl(HTTP请求工具)
+          npm install -g hexo-cli
+          npm install
+          sudo apt-get update
+          sudo apt-get install -y jq curl
 
       # ---------- 处理友链数据 ----------
       - name: "生成友链JSON数据"
         run: |
-          node link.js  # 运行脚本生成 solitude_flink_count.json
-          ls -la ./source/  # 调试：列出文件确认生成成功
+          node link.js
+          ls -la ./source/
 
       - name: "上传友链数据到目标仓库"
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}  # 使用GitHub Token认证
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          # 定义文件上传函数
-          function 上传文件 {
-            本地文件路径=$1
-            目标仓库="qianmo0021/link"  # 要更新的目标仓库
-            目标文件名=$(basename "$本地文件路径")  # 提取文件名
+          function update_file {
+            local file_path=$1
+            local target_repo="qianmo0021/link"
+            local target_file=$(basename "$file_path")
             
-            echo "正在处理文件: $目标文件名"
+            echo "正在处理文件: $target_file"
             
-            # 检查文件是否已存在
-            响应数据=$(curl -s \
+            RESPONSE=$(curl -s \
               -H "Authorization: token $GH_TOKEN" \
               -H "Accept: application/vnd.github.v3+json" \
-              "https://api.github.com/repos/$目标仓库/contents/$目标文件名")
+              "https://api.github.com/repos/$target_repo/contents/$target_file")
             
-            if echo "$响应数据" | jq -e '.sha' >/dev/null 2>&1; then
-              文件版本号=$(echo "$响应数据" | jq -r '.sha')
+            if echo "$RESPONSE" | jq -e '.sha' >/dev/null 2>&1; then
+              SHA=$(echo "$RESPONSE" | jq -r '.sha')
               echo "文件已存在，执行更新操作"
             else
-              文件版本号=""
+              SHA=""
               echo "文件不存在，执行创建操作"
             fi
             
-            # 编码文件内容为Base64
-            文件内容=$(base64 -w0 "$本地文件路径")
+            CONTENT=$(base64 -w0 "$file_path")
             
-            # 构造请求数据
-            请求数据=$(jq -n \
-              --arg 提交信息 "自动更新-$目标文件名-$(date +'%Y-%m-%d %H:%M:%S')" \
-              --arg 内容 "$文件内容" \
-              --arg 版本号 "$文件版本号" \
+            REQUEST_DATA=$(jq -n \
+              --arg msg "自动更新-$target_file-$(date +'%Y-%m-%d %H:%M:%S')" \
+              --arg content "$CONTENT" \
+              --arg sha "$SHA" \
               '{
-                message: $提交信息,
-                content: $内容,
-                sha: $版本号
+                message: $msg,
+                content: $content,
+                sha: $sha
               }')
             
-            # 执行API请求
             curl -X PUT \
               -H "Authorization: token $GH_TOKEN" \
               -H "Accept: application/vnd.github.v3+json" \
               -H "Content-Type: application/json" \
-              "https://api.github.com/repos/$目标仓库/contents/$目标文件名" \
-              -d "$请求数据"
+              "https://api.github.com/repos/$target_repo/contents/$target_file" \
+              -d "$REQUEST_DATA"
             
-            echo "文件 $目标文件名 更新成功"
+            echo "文件 $target_file 更新成功"
           }
 
-          上传文件 "./source/solitude_flink_count.json"  # 指定要上传的文件
+          update_file "./source/solitude_flink_count.json"
 
       # ---------- Hexo构建部署 ----------
       - name: "构建Hexo站点"
         run: |
-          hexo bangumi -u  # 更新追番数据（如果有此插件）
-          hexo clean       # 清理旧文件
-          hexo generate    # 生成静态网页
+          hexo bangumi -u
+          hexo clean
+          hexo generate
 
       - name: "部署到GitHub Pages"
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GH_TOKEN }}  # 认证令牌
-          publish_dir: ./public                  # 发布目录
-          publish_branch: gh-pages               # 目标分支
-          force_orphan: true                     # 强制清空目标分支
+          github_token: ${{ secrets.GH_TOKEN }}
+          publish_dir: ./public
+          publish_branch: gh-pages
+          force_orphan: true
