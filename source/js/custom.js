@@ -1,3 +1,4 @@
+
 // 欢迎卡片配置
 window.WELCOME_CONFIG = {
     API_KEY: 'sUYQBUtT85rJRL0XKByYSaQdea', // API密钥
@@ -98,12 +99,14 @@ const addWelcomeStyles = () => {
         .welcome-ip-info {
             margin-top: 15px;
         }
-        
+        .card-welcome {
+             padding: 8px; /* 控制整个卡片和内容的间距 */
+        }
         .ip-info-container {
             background: #f0f2f5;
             border-radius: 8px;
             padding: 15px;
-            text-align: left;
+            text-align: lift;
             line-height: 1.8;
             color: var(--efu-fontcolor);
             margin-top: 15px;
@@ -304,7 +307,7 @@ const showWelcomeInfo = (container, data) => {
             ${distance > 0 ? `<div class="distance">当前位置距博主约 <b>${distance}</b> 公里</div>` : ''}
             ${ipDisplay ? `<div class="ip-address">${ipDisplay}</div>` : ''}
             <div class="time-greeting">${timeGreeting}</div>
-            <div class="greeting-tip">Tip：<b>${greeting}<b> 🍂</div>
+            <div class="greeting-tip">Tip：<b>${greeting} <b>🍂</div>
         </div>
     `;
     
