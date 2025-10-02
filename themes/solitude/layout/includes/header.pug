@@ -4,3 +4,20 @@ header#page-header(class=is_post() && not_cover ? 'post-bg' : 'not-top-img')
     if is_post()
         if !page.not_cover
             include ./widgets/post/postMeta.pug
+
+    //- 底部波浪开始
+    section.main-hero-waves-area.waves-area
+        svg.waves-svg(
+            xmlns='http://www.w3.org/2000/svg'
+            xlink='http://www.w3.org/1999/xlink'
+            viewBox='0 24 150 28'
+            preserveAspectRatio='none'
+            shape-rendering='auto'
+        )
+            defs
+                path#gentle-wave(d='M-160 44c30 0 58-18 88-18s58 18 88 18 58-18 88-18 58 18 88 18v44h-352Z')
+            g.parallax
+                use(href='#gentle-wave', x='48', y='0', fill='#6a7277')   // 浅灰色底层
+                use(href='#gentle-wave', x='48', y='3', fill='#3f4549')   // 中灰色中层
+                use(href='#gentle-wave', x='48', y='5', fill='#22292d')   // 深灰色中上层
+                use(href='#gentle-wave', x='48', y='4', fill='#111')      // 最深灰色最上层
