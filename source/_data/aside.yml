@@ -3,8 +3,6 @@
   class: card-welcome
   id:
   icon: fas fa-location-dot
-  content_id: welcome-info
-  content_css: 'height:160px;overflow:hidden'
   content_html: |
     <div class="welcome-original">
       <span>👋🏻 Hi，我是莫忘，欢迎你！</span><br>

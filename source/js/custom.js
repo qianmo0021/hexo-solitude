@@ -1,9 +1,9 @@
 // 欢迎卡片配置
-window.IP_CONFIG = {
-    API_KEY: 'sUYQBUtT85rJRL0XKByYSaQdea', // API密钥 申请地址：https://api.76.al/
+window.WELCOME_CONFIG = {
+    API_KEY: 'sUYQBUtT85rJRL0XKByYSaQdea', // API密钥
     BLOG_LOCATION: {
-        lng: 121.51, // 经度
-        lat: 31.24 // 纬度
+        lng: 121.51, // 博主经度
+        lat: 31.24  // 博主纬度
     },
     CACHE_DURATION: 1000 * 60 * 60, // 缓存时间(1小时)
     HOME_PAGE_ONLY: true, // 是否只在首页显示
@@ -103,7 +103,7 @@ const addWelcomeStyles = () => {
             background: #f0f2f5;
             border-radius: 8px;
             padding: 15px;
-            text-align: center;
+            text-align: left;
             line-height: 1.8;
             color: var(--efu-fontcolor);
             margin-top: 15px;
@@ -304,7 +304,7 @@ const showWelcomeInfo = (container, data) => {
             ${distance > 0 ? `<div class="distance">当前位置距博主约 <b>${distance}</b> 公里</div>` : ''}
             ${ipDisplay ? `<div class="ip-address">${ipDisplay}</div>` : ''}
             <div class="time-greeting">${timeGreeting}</div>
-            <div class="greeting-tip">Tip：${greeting} 🍂</div>
+            <div class="greeting-tip">Tip：<b>${greeting}<b> 🍂</div>
         </div>
     `;
     
