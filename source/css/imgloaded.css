@@ -114,12 +114,3 @@
 
 
 
-.theme-aware-image {
-  content: var(--light-theme-image, url('/img/logos.svg'));
-}
-
-@media (prefers-color-scheme: dark) {
-  .theme-aware-image {
-    content: var(--dark-theme-image, url('/img/logoy.svg'));
-  }
-}

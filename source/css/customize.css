@@ -1,0 +1,556 @@
+#aside-content .card-history .swiper-wrapper {
+    flex-direction: column
+}
+
+#aside-content .card-history .item-headline {
+    margin-left: 0
+}
+
+#aside-content .card-history .history_slide {
+    text-align: left;
+    display: flex !important;
+    flex-direction: column;
+    align-items: flex-start
+}
+
+#aside-content .card-history .history_slide_time {
+    color: var(--efu-secondtext);
+    font-size: 14px;
+    font-style: italic;
+    font-weight: lighter
+}
+
+#aside-content .card-history .history_slide_link {
+    line-height: 1.5;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical
+}
+
+#aside-content .card-history .history_slide_link a {
+    color: var(--efu-main);
+    padding: 0 4px;
+    border-radius: 4px
+}
+
+#aside-content .card-history .history_slide_link a:hover {
+    color: var(--efu-white);
+    background: var(--efu-main)
+}
+
+.hexo-douban-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    flex-direction: row
+}
+
+.hexo-douban-items .hexo-douban-comment {
+    display: none
+}
+
+.hexo-douban-items .hexo-douban-item {
+    position: relative;
+    width: calc(100% / 4 - 9px);
+    border-radius: 12px;
+    border: var(--style-border);
+    box-shadow: var(--efu-shadow-border);
+    background: var(--efu-card-bg);
+    transition: .3s;
+    animation: slide-in .6s .3s backwards;
+    border: var(--style-border);
+    margin: 8px 0;
+    height: 160px;
+    min-height: 160px !important;
+    overflow: hidden
+}
+
+@media screen and (max-width:1200px) {
+    .hexo-douban-items .hexo-douban-item {
+        width: calc(100% / 3 - 9px)
+    }
+}
+
+@media screen and (max-width:899px) {
+    .hexo-douban-items .hexo-douban-item {
+        width: calc(100% / 2 - 9px)
+    }
+}
+
+@media screen and (max-width:600px) {
+    .hexo-douban-items .hexo-douban-item {
+        width: 100%
+    }
+}
+
+.hexo-douban-items .hexo-douban-item:hover {
+    border-color: var(--efu-main)
+}
+
+.hexo-douban-items .hexo-douban-item .hexo-douban-picture {
+    width: 120px;
+    height: 100%;
+    top: 0;
+    padding: 10px
+}
+
+.hexo-douban-items .hexo-douban-item .hexo-douban-picture img {
+    margin: 0;
+    height: 100%;
+    max-width: 100%;
+    border-radius: 6px
+}
+
+.hexo-douban-items .hexo-douban-item .hexo-douban-info {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    height: 100%;
+    position: relative
+}
+
+.hexo-douban-items .hexo-douban-item .hexo-douban-info .hexo-douban-rating {
+    position: absolute;
+    bottom: 5px;
+    line-height: 16px
+}
+
+.hexo-douban-items .hexo-douban-item .hexo-douban-info .hexo-douban-meta {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical
+}
+
+@media screen and (max-width:1300px) {
+    .hexo-douban-items .hexo-douban-item .hexo-douban-info .hexo-douban-meta {
+        -webkit-line-clamp: 3 !important
+    }
+}
+
+@media screen and (max-width:899px) {
+    .hexo-douban-items .hexo-douban-item .hexo-douban-info .hexo-douban-meta {
+        -webkit-line-clamp: 4 !important
+    }
+}
+
+.hexo-douban-items .hexo-douban-item .hexo-douban-info .hexo-douban-title {
+    transition: all .2s ease 0s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%
+}
+
+.hexo-douban-items .hexo-douban-item .hexo-douban-info .hexo-douban-title a {
+    border-bottom: 0
+}
+
+.hexo-douban-items .hexo-douban-item .hexo-douban-info .hexo-douban-title a:hover {
+    background: 0 0;
+    color: var(--efu-main)
+}
+
+.hexo-douban-pagination {
+    margin-top: 1.25rem;
+    animation: slide-in .6s .3s backwards
+}
+
+.hexo-douban-pagination .hexo-douban-button {
+    background: var(--efu-card-bg);
+    height: 2rem;
+    line-height: calc(2rem - 2px);
+    border-radius: 8px !important;
+    margin: 0 .3rem;
+    padding: 6px 12px;
+    box-shadow: var(--efu-shadow-border);
+    border: var(--style-border);
+    transition: .3s;
+    display: inline-flex;
+    align-items: center
+}
+
+.hexo-douban-pagination .hexo-douban-button:hover {
+    background: var(--efu-main)
+}
+
+.hexo-douban-tabs {
+    white-space: nowrap;
+    overflow: hidden;
+    display: flex;
+    padding: .4rem 1rem .4rem 1rem;
+    background: var(--efu-card-bg);
+    border-radius: 12px;
+    border: var(--style-border);
+    animation: slide-in .6s .3s backwards
+}
+
+.hexo-douban-tabs:hover {
+    border-color: var(--efu-main)
+}
+
+.hexo-douban-tabs a {
+    padding: .1rem .5rem;
+    margin-right: 6px;
+    font-weight: 700;
+    border-radius: 8px !important;
+    border-bottom: 0
+}
+
+.hexo-douban-tabs .hexo-douban-tab-active {
+    background: var(--efu-main)
+}
+
+.poem-wrap {
+    position: relative;
+    width: 730px;
+    max-width: 80%;
+    border: 2px solid #797979;
+    border-top: 0;
+    text-align: center;
+    margin: 80px auto
+}
+
+.poem-left {
+    left: 0
+}
+
+.poem-border {
+    position: absolute;
+    height: 2px;
+    width: 27%;
+    background-color: #797979
+}
+
+.poem-right {
+    right: 0
+}
+
+.poem-wrap h1 {
+    position: relative;
+    margin-top: -20px;
+    display: inline-block !important;
+    letter-spacing: 4px;
+    color: #797979
+}
+
+.poem-wrap p:nth-of-type(1) {
+    font-size: 25px;
+    text-align: center !important;
+    margin: 0 auto
+}
+
+.poem-wrap p {
+    margin: auto !important;
+    line-height: 30px !important;
+    color: #797979 !important;
+    font-family: "Linux Biolinum", "Noto Serif SC", Helvetica, Arial, Menlo, Monaco, monospace, sans-serif !important
+}
+
+.poem-wrap p:nth-of-type(2) {
+    font-size: 18px !important;
+    margin: 15px auto !important;
+    text-align: center !important
+}
+
+.bozhushuo {
+    text-align: center !important;
+    font-size: 19px;
+    margin: 0 0 12px;
+    line-height: 1.9rem;
+    font-family: "Linux Biolinum", "Noto Serif SC", Helvetica, Arial, Menlo, Monaco, monospace, sans-serif
+}
+
+.notice {
+    margin: 30px auto !important;
+    padding: 20px !important;
+    border: 1px dashed #e6e6e6;
+    color: #969696;
+    position: relative;
+    display: inline-block !important;
+    width: 95%;
+    background: #fbfbfb50 !important;
+    border-radius: 10px !important;
+    font-size: 16px
+}
+
+.notice-content {
+    display: initial !important;
+    vertical-align: middle !important
+}
+
+#footer-animal {
+    position: relative;
+    width: 100%
+}
+
+#footer-animal .animal-wall {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 36px;
+    max-width: none;
+    background: #bcb0a4 url(https://p.qjqq.cn/cover/202410191400532.png/color) repeat center;
+    background-size: auto 100%;
+    box-shadow: 0 4px 7px rgba(0, 0, 0, .15)
+}
+
+@media screen and (max-width:1023px) {
+    #footer-animal .animal-wall {
+        height: 4vw
+    }
+}
+
+#footer-animal img.animal {
+    position: relative;
+    max-width: min(974px, 100vw);
+    margin: 0 auto;
+    display: block
+}
+
+#footer-bar {
+    margin-top: 0 !important
+}
+
+@font-face {
+    font-family: JinBuTi;
+    src: url(/qjqq/font/DingTalk-JinBuTi.woff2) format('woff2'), url(/qjqq/font/DingTalk-JinBuTi.woff) format('woff');
+    font-weight: 400;
+    font-style: normal
+}
+
+.card-widget {
+    padding: 10px !important;
+    max-height: calc(100vh - 100px)
+}
+
+.card-times a,
+.card-times div {
+    color: var(--efu-fontcolor)
+}
+
+#card-widget-calendar .item-content {
+    display: flex
+}
+
+#calendar-area-left {
+    width: 45%
+}
+
+#calendar-area-right {
+    width: 55%
+}
+
+#calendar-area-left,
+#calendar-area-right {
+    height: 100%;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center
+}
+
+#calendar-main {
+    width: 100%
+}
+
+#calendar-week {
+    height: 1.2rem;
+    font-size: 14px;
+    letter-spacing: 1px;
+    font-weight: 700;
+    align-items: center;
+    display: flex
+}
+
+#calendar-date {
+    height: 3rem;
+    line-height: 1.3;
+    font-size: 64px;
+    letter-spacing: 3px;
+    color: var(--efu-main);
+    font-weight: 700;
+    align-items: center;
+    display: flex;
+    position: absolute;
+    top: calc(50% - 2.1rem)
+}
+
+#calendar-lunar,
+#calendar-solar {
+    height: 1rem;
+    font-size: 12px;
+    align-items: center;
+    display: flex;
+    position: absolute
+}
+
+#calendar-solar {
+    bottom: 2.1rem
+}
+
+#calendar-lunar {
+    bottom: 1rem;
+    color: var(--efu-secondtext)
+}
+
+#calendar-main a {
+    height: 1rem;
+    width: 1rem;
+    border-radius: 50%;
+    font-size: 12px;
+    line-height: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center
+}
+
+#calendar-main a.now {
+    background: var(--efu-main);
+    color: var(--efu-card-bg)
+}
+
+#calendar-main .calendar-rh a {
+    color: var(--efu-secondtext)
+}
+
+.calendar-r0,
+.calendar-r1,
+.calendar-r2,
+.calendar-r3,
+.calendar-r4,
+.calendar-r5,
+.calendar-rh {
+    height: 1.2rem;
+    display: flex
+}
+
+.calendar-d0,
+.calendar-d1,
+.calendar-d2,
+.calendar-d3,
+.calendar-d4,
+.calendar-d5,
+.calendar-d6 {
+    width: calc(100% / 7);
+    display: flex;
+    justify-content: center;
+    align-items: center
+}
+
+#card-widget-schedule .item-content {
+    display: flex
+}
+
+#schedule-area-left,
+#schedule-area-right {
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center
+}
+
+#schedule-area-left {
+    width: 30%
+}
+
+#schedule-area-right {
+    width: 70%;
+    padding: 0 5px
+}
+
+.schedule-r0,
+.schedule-r1,
+.schedule-r2 {
+    height: 2rem;
+    width: 100%;
+    align-items: center;
+    display: flex
+}
+
+.schedule-d0 {
+    width: 30px;
+    margin-right: 5px;
+    text-align: center;
+    font-size: 12px
+}
+
+.schedule-d1 {
+    width: calc(100% - 35px);
+    height: 1.5rem;
+    align-items: center;
+    display: flex
+}
+
+progress::-webkit-progress-bar {
+    background: linear-gradient(to right, var(--efu-main-op-deep), var(--efu-main-op), var(--efu-main-op-light));
+    border-radius: 5px;
+    overflow: hidden
+}
+
+progress::-webkit-progress-value {
+    background: var(--efu-main);
+    border-radius: 5px
+}
+
+.aside-span1,
+.aside-span2 {
+    height: 1rem;
+    font-size: 12px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    position: absolute
+}
+
+.aside-span1 {
+    margin-left: 5px
+}
+
+.aside-span2 {
+    right: 20px;
+    color: var(--efu-secondtext)
+}
+
+.aside-span2 a {
+    margin: 0 3px
+}
+
+#pBar_month,
+#pBar_week,
+#pBar_year {
+    width: 100%;
+    border-radius: 5px;
+    height: 100%
+}
+
+#schedule-date,
+#schedule-days,
+#schedule-title {
+    display: flex;
+    align-items: center
+}
+
+#schedule-title {
+    height: 25px;
+    line-height: 1;
+    font-size: 14px;
+    font-weight: 700
+}
+
+#schedule-days {
+    height: 40px;
+    line-height: 1;
+    font-size: 30px;
+    font-weight: 900;
+    color: var(--efu-main)
+}
+
+#schedule-date {
+    height: 20px;
+    line-height: 1;
+    font-size: 12px;
+    color: var(--efu-secondtext)
+}
