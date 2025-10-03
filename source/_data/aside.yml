@@ -6,9 +6,10 @@
   
   content_html: |
     <div class="welcome-original">
-      <span>👋🏻 Hi，我是莫忘，欢迎你！</span><br>
+      <span>👋🏻 Hi，我是李小白，欢迎你！</span><br>
       <span>❓ 如有问题欢迎评论区交流！</span><br>
       <span>😫 页面异常？尝试<kbd>Ctrl</kbd>+<kbd>F5</kbd></span><br>
       <span>📧 如需联系我：<a href="mailto:lx@xrbk.cn"><b>发送邮件🚀</b></a></span>
     </div>
     <div id="welcome-info" class="welcome-ip-info"></div>
+

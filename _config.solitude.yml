@@ -118,7 +118,7 @@ aside:
   # Sticky: Fixed position / noSticky: Not fixed position
   # Sticky: 固定位置 / noSticky: 不固定位置
   home: # on the homepage
-    noSticky: "about,welcome"
+    noSticky: "about,calendar,schedule,welcome"
     Sticky: "allInfo"
   post: # on the article page
     noSticky: "about"
@@ -232,6 +232,7 @@ page:
     # 未设置封面时的默认图片
     cover:
       # - /img/default.png # 默认图片 / default cover
+index_img: "background: url() top / cover no-repeat"
 # --------------------------- end ---------------------------
 
 # --------------------------- start ---------------------------
@@ -634,8 +635,8 @@ keyboard:
 # Lazyload
 # 懒加载
 lazyload:
-  enable: false
-  field: site
+  enable: true
+  field: post
   placeholder: ""
   errorimg: /img/error_load.avif
 # --------------------------- end ---------------------------
@@ -757,9 +758,9 @@ extends:
   # Insert in head
   # 插入到 head
   head:
-    - <link rel="stylesheet" href="/css/imgloaded.css?1"> # 首页图片渐进式加载  
+  #  - <link rel="stylesheet" href="/css/imgloaded.css?1"> # 首页图片渐进式加载  
     - <link rel="stylesheet" href="/css/customize.css"> #自定义css
-    
+  
 
     
   #  - <script src="https://cdn.bootcdn.net/ajax/libs/pace/1.2.4/pace.min.js"></script>
@@ -767,11 +768,9 @@ extends:
   # Insert in body
   # 插入到 body
   body:
-    - <script src="https://open.lightxi.com/unpkg/chinese-lunar@0.1.4/lib/chinese-lunar.js"></script> #日历卡片
-    - <script src="/js/customize.js"></script> # 自定义js
-    - <script src="/js/imgloaded.js?1"></script> # 首页图片渐进式加载  
-    - <script defer pjax src="/js/custom.js"></script>
 
+    - <script src="/js/customize.js"></script> # 自定义js
+    - <script defer pjax src="/js/custom.js"></script> #首页定位欢迎
   #  - <script src="https://cdn.bootcdn.net/ajax/libs/pace/1.2.4/pace.min.js"></script>
 # --------------------------- end ---------------------------
 
