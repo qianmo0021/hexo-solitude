@@ -1,0 +1,509 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><title>侧边栏添加日历组件 | 李小白</title><noscript>开启JavaScript才能访问本站哦~</noscript><link rel="icon" href="/img/logos.icu"><link rel="stylesheet" href="/css/index.css?v=3.0.21"><link rel="canonical" href="http://example.com/posts/14af/index.html"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css"><!-- Feature-specific CSS--><!-- aplayer--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css"><!-- swiper--><!-- fancybox ui--><!-- katex--><!-- Open Graph--><meta name="description" content="侧边栏添加日历组件新建 widget.yml在 source&amp;#x2F;_data 路径下新建一个 widget.yml 文件 以后所有自定义的侧边栏组件都可以写在这里面，具体写法参考 butterfly 官方文档 12345678910111213141516171819202122232425262728"><!-- pwa--><meta name="theme-color" content="#006a73"><meta name="apple-mobile-web-app-status-bar-style" content="#006a73"><link rel="manifest" href="/manifest.json"><meta name="msapplication-TileColor" content="#006a73"><link rel="mask-icon" href="/img/pwa/favicon.png" color="#006a73"><link rel="apple-touch-icon" sizes="180x180" href="/img/pwa/favicon.png"><link rel="icon" type="image/png" sizes="16x16" href="/img/pwa/favicon_16.png"><link rel="icon" type="image/png" sizes="32x32" href="/img/pwa/favicon_32.png"><link rel="bookmark" href="/img/pwa/favicon.png"><script>console.log(' %c Solitude %c ' + '3.0.21' + ' %c https://github.com/everfu/hexo-theme-solitude',
+    'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
+    'background:#ff9a9a ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
+    'background:unset ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff')
+</script><link rel="stylesheet" href="/css/customize.css"><script>(()=>{
+        const saveToLocal = {
+            set: function setWithExpiry(key, value, ttl) {
+                if (ttl === 0)
+                    return
+                const now = new Date()
+                const expiryDay = ttl * 86400000
+                const item = {
+                    value: value,
+                    expiry: now.getTime() + expiryDay
+                }
+                localStorage.setItem(key, JSON.stringify(item))
+            },
+            get: function getWithExpiry(key) {
+                const itemStr = localStorage.getItem(key)
+
+                if (!itemStr) {
+                    return undefined
+                }
+                const item = JSON.parse(itemStr)
+                const now = new Date()
+
+                if (now.getTime() > item.expiry) {
+                    localStorage.removeItem(key)
+                    return undefined
+                }
+                return item.value
+            }
+        };
+        window.utils = {
+            saveToLocal: saveToLocal,
+            getCSS: (url, id = false) => new Promise((resolve, reject) => {
+              const link = document.createElement('link')
+              link.rel = 'stylesheet'
+              link.href = url
+              if (id) link.id = id
+              link.onerror = reject
+              link.onload = link.onreadystatechange = function() {
+                const loadState = this.readyState
+                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+                link.onload = link.onreadystatechange = null
+                resolve()
+              }
+              document.head.appendChild(link)
+            }),
+            getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+              const script = document.createElement('script')
+              script.src = url
+              script.async = true
+              script.onerror = reject
+              script.onload = script.onreadystatechange = function() {
+                const loadState = this.readyState
+                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+                script.onload = script.onreadystatechange = null
+                resolve()
+              }
+
+              Object.keys(attr).forEach(key => {
+                script.setAttribute(key, attr[key])
+              })
+
+              document.head.appendChild(script)
+            }),
+            addGlobalFn: (key, fn, name = false, parent = window) => {
+                const globalFn = parent.globalFn || {}
+                const keyObj = globalFn[key] || {}
+
+                if (name && keyObj[name]) return
+
+                name = name || Object.keys(keyObj).length
+                keyObj[name] = fn
+                globalFn[key] = keyObj
+                parent.globalFn = globalFn
+            },
+            addEventListenerPjax: (ele, event, fn, option = false) => {
+              ele.addEventListener(event, fn, option)
+              utils.addGlobalFn('pjax', () => {
+                  ele.removeEventListener(event, fn, option)
+              })
+            },
+            diffDateFormat: (selector) => {
+                selector.forEach(item => {
+                    const date = new Date(item.getAttribute('datetime') || item.textContent);
+                    item.textContent = (date.getMonth() + 1).toString()+'/'+date.getDate().toString();
+                });
+            },
+        }
+    })()</script><!-- theme--><script>initTheme = () => {
+    let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const cachedMode = utils.saveToLocal.get('theme');
+    if (cachedMode === undefined) {
+        const nowMode =
+            isDarkMode ? 'dark' : 'light'
+        document.documentElement.setAttribute('data-theme', nowMode);
+    } else {
+        document.documentElement.setAttribute('data-theme', cachedMode);
+    }
+    typeof rm === 'object' && rm.mode(cachedMode === 'dark' && isDarkMode)
+}
+initTheme()</script><script>const GLOBAL_CONFIG = {
+    root: '/',
+    algolia: undefined,
+    localsearch: {"preload":false,"path":"/search.xml"},
+    runtime: '2025-09-30 00:00:00',
+    lazyload: {
+        enable: true,
+        error: '/img/error_load.avif'
+    },
+    copyright: false,
+    highlight: {"limit":200,"expand":true,"copy":true,"syntax":"highlight.js"},
+    randomlink: true,
+    lang: {"theme":{"dark":"已切换至深色模式","light":"已切换至浅色模式"},"copy":{"success":"复制成功","error":"复制失败"},"backtop":"返回顶部","time":{"day":"天前","hour":"小时前","just":"刚刚","min":"分钟前","month":"个月前"},"day":" 天","f12":"开发者模式已打开，请遵循GPL协议。","totalk":"无需删除空行，直接输入评论即可","search":{"empty":"找不到你查询的内容：${query}","hit":"找到 ${hits} 条结果，用时 ${time} 毫秒","placeholder":"输入关键词快速查找","count":"共 <b>${count}</b> 条结果。","loading":"搜索中..."},"barrage":{"title":"热评"}},
+    aside: {
+        state: {
+            morning: "✨ 晨光熹微，清风迎早",
+            noon: "🍲 午炊时分，人间烟火",
+            afternoon: "📖 午后闲读，静享时光",
+            night: "🌙 月满西楼，早些安歇",
+            goodnight: "💤 星河入梦，夜寐安宁",
+        },
+        witty_words: ["🤖️ 数码科技爱好者","🔍 分享与热心帮助","🏠 智能家居小能手","🔨 设计开发一条龙","🤝 专修交互与设计","🏃 脚踏实地行动派","🧱 团队小组发动机","💢 壮汉人狠话不多"],
+        witty_comment: {
+            prefix: '好久不见，',
+            back: '欢迎再次回来，',
+        },
+    },
+    covercolor: {
+        enable: false
+    },
+    comment: {"avatar":"https://gravatar.com/avatar","commentBarrage":true},
+    lightbox: 'mediumZoom',
+    right_menu: {"mode":{"dark":"深色模式","light":"浅色模式"},"img_error":"此图片无法复制与下载","music":{"start":"播放音乐","stop":"暂停音乐"},"barrage":{"open":"显示热评","close":"关闭热评"},"translate":true,"ctrlOriginalMenu":"按住Ctrl+右键可打开浏览器右键菜单"},
+    translate: {"translateDelay":0,"defaultEncoding":2},
+    lure: false,
+    expire: {"time":180,"position":"top","text_prev":"喵~这篇文章已经 ","text_next":" 天没吃小鱼干了，内容可能饿瘦了，求投喂更新❤️"},
+};</script><script id="config-diff">var PAGE_CONFIG = {
+    is_post: true,
+    is_page: false,
+    is_home: false,
+    page: '',
+    toc: true,
+    comment: true,
+    ai_text: false,
+    color: false,
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body id="body"><div><canvas id="universe"></canvas></div><div><div id="loading-box" onclick="preloader.endLoading();" style="zoom:1"><div class="loading-bg"><img class="loading-img nolazyload" src="https://q1.qlogo.cn/g?b=qq&amp;nk=648226460&amp;s=640" alt="loading image"></div></div><script>const preloader = {
+    isLoaded: false,
+    endLoading: () => {
+        if (!preloader.isLoaded) {
+            document.getElementById('loading-box').classList.add('loaded');
+            preloader.isLoaded = true;
+            preloader.togglePaceDone();
+        }
+    },
+    initLoading: () => {
+        document.getElementById('loading-box').classList.remove('loaded');
+        preloader.isLoaded = false;
+        preloader.togglePaceDone();
+    },
+    togglePaceDone: () => {
+        document.getElementById('body').className = preloader.isLoaded ? 'pace-done' : '';
+    }
+}
+
+window.addEventListener('load', () => {
+    preloader.endLoading();
+});
+
+window.addEventListener('pjax:send', () => {
+    preloader.initLoading();
+});
+
+document.addEventListener('pjax:complete', () => {
+    preloader.endLoading();
+});
+
+setTimeout(() => {
+    preloader.endLoading();
+}, 5000);</script></div><div><div id="console"><div class="close-btn" onclick="sco.hideConsole()"><i class="solitude fas fa-xmark"></i></div><div class="console-card-group"><div class="console-card-group-left"><div class="console-card" id="card-newest-comments" onclick="sco.hideConsole()"><div class="card-content"><div class="author-content-item-tips">互动</div><div class="author-content-item-title">最新评论</div></div><div class="console_recentcomments"><script pjax="">(async () => {
+    document.querySelector('.console-card .console_recentcomments').textContent = `加载中...`
+    const emojiReg = /<img class="tk-owo-emotion" [^>]+>/g
+    let cache = utils.saveToLocal.get('twikoo-recent-comments-console')
+    if (cache) {
+        setHtml(document.querySelector('.console-card .console_recentcomments'), cache)
+        return
+    }
+    let ls = []
+
+    await fetch('https://twikoo.siyouyun.eu.org/', {
+        method: "POST",
+        body: JSON.stringify({
+            "event": "GET_RECENT_COMMENTS",
+            "includeReply": true,
+            "pageSize": 6
+        }),
+        headers: {'Content-Type': 'application/json'}
+    }).then(res => res.json()).then(async ({data}) => {
+        for (const i of data) {
+            if (i.avatar === undefined) i.avatar = 'https://gravatar.com/avatar/avatar/d615d5793929e8c7d70eab5f00f7f5f1?d=mp'
+            let title = ''
+            if (i.url) {
+                await fetch(i.url).then(res => res.text()).then(html => {
+                    const parser = new DOMParser()
+                    const doc = parser.parseFromString(html, 'text/html')
+                    title = doc.querySelector('title').innerText
+                }).catch(() => {
+                    title = i.url
+                })
+            }
+            if (title.indexOf('|') > 0) {
+                title = title.split('|')[0]
+            }
+            ls.push({
+                avatar: i.avatar,
+                nick: i.nick,
+                title: title,
+                content: i.comment,
+                url: i.url + '#' + i.id,
+                time: i.created
+            })
+        }
+        setHtml(document.querySelector('.console-card .console_recentcomments'), ls)
+        utils.saveToLocal.set('twikoo-recent-comments-console', ls, 0.2)
+    });
+
+    function setHtml(el, data) {
+        el.innerHTML = data.length !== 0 ? data.map(i => `
+            <div class="comment-card" title="${i.title}" onclick="pjax.loadUrl('${i.url}')">
+                <div class="comment-info">
+                    <img src="${i.avatar}" class="nolazyload" alt="${i.nick}">
+                    <div>
+                        <span class="comment-user">${i.nick}</span>
+                    </div>
+                    <time class="comment-time" datetime="${new Date(i.time)}"></time>
+                </div>
+                <div class="comment-content">${formatContent(i.content)}</div>
+                <div class="comment-title">
+                <i class="solitude fas fa-comment"></i>
+                ${i.title}</div>
+            </div>
+        `).join('') : `暂无评论...`
+        if (typeof utils !== 'undefined') utils.diffDateFormat(document.querySelectorAll('.comment-time'))
+        else {
+            document.addEventListener('pjax:complete', () => utils.diffDateFormat(document.querySelectorAll('.comment-time')))
+            document.addEventListener('DOMContentLoaded', () => utils.diffDateFormat(document.querySelectorAll('.comment-time')))
+        }
+    }
+
+    function formatContent(content) {
+        content = content.replace(emojiReg, '表情')
+        content = content.replace(/<\/*br>|[\s\uFEFF\xA0]+/g, '');
+        content = content.replace(/<img.*?>/g, '[图片]');
+        content = content.replace(/<a.*?>.*?<\/a>/g, '[链接]');
+        content = content.replace(/<pre.*?>.*?<\/pre>/g, '[代码]');
+        content = content.replace(/<.*?>/g, '');
+        return content
+    }
+})()</script></div></div></div><div class="console-card-group-right"><div class="console-card tags" onclick="sco.hideConsole()"><div class="card-content"><div class="author-content-item-tips">标签</div><div class="author-content-item-title">寻找感兴趣的领域</div></div><div class="card-tag-cloud"><a href="/tags/Hexo/">Hexo<sup>4</sup></a><a href="/tags/%E5%8D%9A%E5%AE%A2%E9%85%8D%E7%BD%AE/">博客配置<sup>4</sup></a><a href="/tags/%E6%95%99%E7%A8%8B/">教程<sup>4</sup></a></div></div><div class="console-card history" onclick="sco.hideConsole()"><ul class="card-archive-list"><li class="item"><a href="/archives/2025/09/"><span class="date">2025/09</span><div class="count-group"><span class="count">4</span><span class="unit">篇</span></div></a></li><li class="item"><a href="/archives/"><span class="date">全部文章</span><div class="count-group"><span class="count">4</span><span class="unit">篇</span></div></a></li></ul></div></div></div><div class="button-group"><div class="console-btn-item"><span class="darkmode_switchbutton" onclick="sco.switchDarkMode()" title="昼夜切换"><i class="solitude fas fa-circle-half-stroke"></i></span></div><div class="console-btn-item" id="consoleHideAside"><span class="asideSwitch" onclick="sco.switchHideAside()" title="边栏显示控制"><i class="solitude fas fa-arrows-left-right-to-line"></i></span></div><div class="console-btn-item" id="consoleMusic" onclick="sco.musicToggle()"><span class="music-switch" title="音乐开关"><i class="solitude fas fa-compact-disc"></i></span></div><div class="console-btn-item on" id="consoleCommentBarrage" onclick="sco.switchCommentBarrage()"><span class="commentBarrage"><i class="solitude fas fa-comment"></i></span></div></div><div class="console-mask" onclick="sco.hideConsole()"></div></div></div><div id="sidebar" style="zoom: 1;"><div id="menu-mask" style="display: none;"></div><div id="sidebar-menus"><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">4</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">3</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/recentcomments/"><div class="headline">评论</div><div class="length-num" id="twikoo_allcount"><i class="solitude fas fa-spinner fa-spin"></i></div><script pjax="pjax">(async () => {
+  await fetch('https://twikoo.siyouyun.eu.org/', {
+    method: "POST",
+    body: JSON.stringify({
+      "event": "GET_RECENT_COMMENTS",
+      "includeReply": true,
+      "pageSize": 999
+    }),
+    headers: {'Content-Type': 'application/json'}
+  }).then(res => res.json()).then(async ({data}) => {
+    document.querySelector('#twikoo_allcount').innerHTML = data.length
+  })
+})()</script></a></div></div></div><span class="sidebar-menu-item-title">功能</span><div class="sidebar-menu-item"><span class="darkmode_switchbutton menu-child" onclick="sco.switchDarkMode()"><i class="solitude fas fa-circle-half-stroke"></i><span>显示模式</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><span>首页</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span>文章</span></a><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="solitude  fas fa-folder-closed"></i><span>归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="solitude  fas fa-clone"></i><span>分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="solitude  fas fa-tags"></i><span>标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span>友链</span></a><ul class="menus_item_child"><li><a class="site-page child" href="/moments/"><i class="solitude  fas fa-wifi"></i><span>朋友圈</span></a></li><li><a class="site-page child" href="/links/"><i class="solitude  fas fa-user-group"></i><span>友情链接</span></a></li><li><a class="site-page child" href="javascript:travelling()"><i class="solitude  fas fa-gift"></i><span>宝藏博主</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span>我的</span></a><ul class="menus_item_child"><li><a class="site-page child" href="/about/"><i class="solitude  fas fa-user"></i><span>关于</span></a></li><li><a class="site-page child" href="/music/"><i class="solitude  fas fa-music"></i><span>音乐馆</span></a></li><li><a class="site-page child" href="/bangumis/"><i class="solitude  fas fa-tv"></i><span>追番页</span></a></li></ul></div></div><span class="sidebar-menu-item-title">标签</span><div class="card-tags"><div class="card-tag-cloud"><a href="/tags/Hexo/">Hexo<sup>4</sup></a><a href="/tags/%E5%8D%9A%E5%AE%A2%E9%85%8D%E7%BD%AE/">博客配置<sup>4</sup></a><a href="/tags/%E6%95%99%E7%A8%8B/">教程<sup>4</sup></a></div></div><span class="sidebar-menu-item-title">网站信息</span><div class="webinfo"><div class="webinfo-item"><div class="item-name">全站字数 :</div><div class="item-count">10.2k</div></div></div></div></div><div><div class="needEndHide" id="rightside"><div class="rs_hide"><button class="mode" type="button" title="显示模式切换" onclick="sco.switchDarkMode()"><i class="fas fa-circle-half-stroke"></i></button><button class="aside pc" type="button" title="侧边栏" onclick="sco.switchHideAside()"><i class="fas fa-arrows-alt-h"></i></button></div><div class="rs_show"><button class="config" type="button" title="扩展" onclick="document.querySelector(&quot;.rs_hide&quot;).classList.toggle(&quot;show&quot;)"><i class="fas fa-gear fa-spin"></i></button><button class="mobile toc" type="button" title="目录" onclick="document.querySelector('#card-toc').classList.toggle('open')"><i class="fas fa-list"></i></button><button class="comment" type="button" title="评论" onclick="sco.scrollTo('post-comment')"><i class="fas fa-comment"></i></button><button class="barrage pc" type="button" title="弹" onclick="sco.switchCommentBarrage()"><span>弹</span></button><button class="top" type="button" title="返回顶部" onclick="sco.toTop()"><i class="fas fa-arrow-up"></i><span id="percent">0</span></button></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav class="show" id="nav"><div id="nav-group"><div id="blog_name"><a href="/" title="返回博客主页" id="site-name"><span class="title">李小白</span><i class="solitude fas fa-home"></i></a></div><div id="page-name-mask"><div id="page-name"><a id="page-name-text" onclick="sco.toTop()">侧边栏添加日历组件</a></div></div><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><span>首页</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span>文章</span></a><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="solitude  fas fa-folder-closed"></i><span>归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="solitude  fas fa-clone"></i><span>分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="solitude  fas fa-tags"></i><span>标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span>友链</span></a><ul class="menus_item_child"><li><a class="site-page child" href="/moments/"><i class="solitude  fas fa-wifi"></i><span>朋友圈</span></a></li><li><a class="site-page child" href="/links/"><i class="solitude  fas fa-user-group"></i><span>友情链接</span></a></li><li><a class="site-page child" href="javascript:travelling()"><i class="solitude  fas fa-gift"></i><span>宝藏博主</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span>我的</span></a><ul class="menus_item_child"><li><a class="site-page child" href="/about/"><i class="solitude  fas fa-user"></i><span>关于</span></a></li><li><a class="site-page child" href="/music/"><i class="solitude  fas fa-music"></i><span>音乐馆</span></a></li><li><a class="site-page child" href="/bangumis/"><i class="solitude  fas fa-tv"></i><span>追番页</span></a></li></ul></div></div></div><div id="nav-left"></div><div id="nav-right"><div class="nav-button" id="randomPost_button"><a class="site-page" onclick="toRandomPost()" title="随机一篇文章" href="javascript:void(0);"><i class="solitude fas fa-dice-d6"></i></a></div><div class="nav-button" id="search-button"><a class="site-page social-icon search" href="javascript:void(0);" title="搜索"><i class="solitude fas fa-magnifying-glass"></i></a></div><div class="nav-button" id="nav-console"><a class="console_switchbutton" onclick="sco.showConsole()" title="中控台" href="javascript:void(0);"><label><i class="left"></i><i class="center"></i><i class="right"></i></label></a></div><div id="toggle-menu"><a class="site-page"><i class="solitude fas fa-bars"></i></a></div></div></div></nav><div class="coverdiv" id="coverdiv"><img class="nolazyload" id="post-cover" src="https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/53cbe135ea463ecf031f166396fe1a766b932c3315006fd2727deeb9aecddcb014be287c8a6e02d2b826688b579e4dc7?pictype=scale&amp;from=30113&amp;version=3.3.3.3&amp;fname=p0cc71.png&amp;size=1000" alt="侧边栏添加日历组件"></div><div id="post-info"><div id="post-firstinfo"><div class="meta-firstline"><a class="post-meta-original" title="该文章为原创文章，注意版权协议">原创</a><span class="post-meta-categories"><a class="post-meta-categories" href="/categories/%E6%95%99%E7%A8%8B/">教程</a></span><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Hexo/"><span class="tags-name tags-punctuation"><i class="solitude fas fa-hashtag"></i>Hexo</span></a><a class="post-meta__tags" href="/tags/%E5%8D%9A%E5%AE%A2%E9%85%8D%E7%BD%AE/"><span class="tags-name tags-punctuation"><i class="solitude fas fa-hashtag"></i>博客配置</span></a><a class="post-meta__tags" href="/tags/%E6%95%99%E7%A8%8B/"><span class="tags-name tags-punctuation"><i class="solitude fas fa-hashtag"></i>教程</span></a></div></div></div></div><h1 class="post-title">侧边栏添加日历组件</h1><div id="post-meta"><div class="meta-secondline"><span class="post-meta-date" title="发布于 2025-09-29 11:10:48"><i class="post-meta-icon solitude fas fa-calendar-days"></i><time datetime="2025-09-29T03:10:48.000Z">2025-09-29T03:10:48.000Z</time></span><span class="post-meta-date" title="最后更新于 2025-10-03 11:14:31"><i class="post-meta-icon solitude fas fa-arrows-rotate"></i><time datetime="2025-10-03T03:14:31.154Z">2025-10-03T03:14:31.154Z</time></span><span class="post-meta-wordcount"><i class="post-meta-icon solitude fas fa-file-word" title="文章字数"></i><span class="word-count">1.7k</span><span class="post-meta-separator"></span><i class="post-meta-icon solitude fas fa-clock" title="阅读耗时"></i><span>9 分钟</span></span><span class="post-meta-position" title="作者IP归属地为上海"><i class="post-meta-icon solitude fas fa-location-dot"></i><span>上海</span></span><a class="post-meta-pv" href="/posts/14af/" title="文章热度"><i class="post-meta-icon solitude fas fa-fire-flame-curved"></i><span id="twikoo_visitors"><i class="solitude fas fa-spinner fa-spin"></i></span></a><span class="post-meta-commentcount" title="评论数" onclick="sco.scrollTo('post-comment')"><i class="solitude fas fa-comment"></i><a href="/posts/14af/#post-comment"><span class="twikoo-count"><i class="solitude fas fa-spinner fa-spin"></i></span></a></span></div></div></div><div class="post-radius-bottom"></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s58 18 88 18 58-18 88-18 58 18 88 18v44h-352Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0" fill="#6a7277">  // 浅灰色底层</use><use href="#gentle-wave" x="48" y="3" fill="#3f4549">  // 中灰色中层</use><use href="#gentle-wave" x="48" y="5" fill="#22292d">  // 深灰色中上层</use><use href="#gentle-wave" x="48" y="4" fill="#111">     // 最深灰色最上层</use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="post-content article-container"><h1 id="侧边栏添加日历组件"><a href="#侧边栏添加日历组件" class="headerlink" title="侧边栏添加日历组件"></a>侧边栏添加日历组件</h1><h3 id="新建-widget-yml"><a href="#新建-widget-yml" class="headerlink" title="新建 widget.yml"></a>新建 widget.yml</h3><p>在 <code>source/_data</code> 路径下新建一个 <code>widget.yml</code> 文件</p>
+<p>以后所有自定义的侧边栏组件都可以写在这里面，具体写法参考 butterfly 官方文档</p>
+<figure class="highlight yml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">top:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">class_name:</span> <span class="string">card-times</span></span><br><span class="line">    <span class="attr">id_name:</span> <span class="string">card-widget-calendar</span></span><br><span class="line">    <span class="attr">name:</span></span><br><span class="line">    <span class="attr">icon:</span></span><br><span class="line">    <span class="attr">html:</span></span><br><span class="line">      <span class="string">&lt;div</span> <span class="string">id="calendar-area-left"&gt;</span></span><br><span class="line">        <span class="string">&lt;div</span> <span class="string">id="calendar-week"&gt;&lt;/div&gt;</span></span><br><span class="line">        <span class="string">&lt;div</span> <span class="string">id="calendar-date"&gt;&lt;/div&gt;</span></span><br><span class="line">        <span class="string">&lt;div</span> <span class="string">id="calendar-solar"&gt;&lt;/div&gt;</span></span><br><span class="line">        <span class="string">&lt;div</span> <span class="string">id="calendar-lunar"&gt;&lt;/div&gt;</span></span><br><span class="line">      <span class="string">&lt;/div&gt;</span></span><br><span class="line">      <span class="string">&lt;div</span> <span class="string">id="calendar-area-right"&gt;</span></span><br><span class="line">        <span class="string">&lt;div</span> <span class="string">id="calendar-main"&gt;</span></span><br><span class="line">          <span class="string">&lt;div</span> <span class="string">class="calendar-rh"&gt;</span></span><br><span class="line">            <span class="string">&lt;div</span> <span class="string">class="calendar-d0"&gt;&lt;a&gt;日&lt;/a&gt;&lt;/div&gt;</span></span><br><span class="line">            <span class="string">&lt;div</span> <span class="string">class="calendar-d1"&gt;&lt;a&gt;一&lt;/a&gt;&lt;/div&gt;</span></span><br><span class="line">            <span class="string">&lt;div</span> <span class="string">class="calendar-d2"&gt;&lt;a&gt;二&lt;/a&gt;&lt;/div&gt;</span></span><br><span class="line">            <span class="string">&lt;div</span> <span class="string">class="calendar-d3"&gt;&lt;a&gt;三&lt;/a&gt;&lt;/div&gt;</span></span><br><span class="line">            <span class="string">&lt;div</span> <span class="string">class="calendar-d4"&gt;&lt;a&gt;四&lt;/a&gt;&lt;/div&gt;</span></span><br><span class="line">            <span class="string">&lt;div</span> <span class="string">class="calendar-d5"&gt;&lt;a&gt;五&lt;/a&gt;&lt;/div&gt;</span></span><br><span class="line">            <span class="string">&lt;div</span> <span class="string">class="calendar-d6"&gt;&lt;a&gt;六&lt;/a&gt;&lt;/div&gt;</span></span><br><span class="line">          <span class="string">&lt;/div&gt;</span></span><br><span class="line">        <span class="string">&lt;/div&gt;</span></span><br><span class="line">      <span class="string">&lt;/div&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">class_name:</span> <span class="string">card-times</span></span><br><span class="line">    <span class="attr">id_name:</span> <span class="string">card-widget-schedule</span></span><br><span class="line">    <span class="attr">name:</span></span><br><span class="line">    <span class="attr">icon:</span></span><br><span class="line">    <span class="attr">html:</span></span><br><span class="line">      <span class="string">&lt;div</span> <span class="string">id="schedule-area-left"&gt;</span></span><br><span class="line">        <span class="string">&lt;div</span> <span class="string">id="schedule-title"&gt;距离决赛&lt;/div&gt;</span></span><br><span class="line">        <span class="string">&lt;div</span> <span class="string">id="schedule-days"&gt;000&lt;/div&gt;</span></span><br><span class="line">        <span class="string">&lt;div</span> <span class="string">id="schedule-date"&gt;2024-12-20&lt;/div&gt;</span></span><br><span class="line">      <span class="string">&lt;/div&gt;</span></span><br><span class="line">      <span class="string">&lt;div</span> <span class="string">id="schedule-area-right"&gt;</span></span><br><span class="line">        <span class="string">&lt;div</span> <span class="string">class="schedule-r0"&gt;</span></span><br><span class="line">          <span class="string">&lt;div</span> <span class="string">class="schedule-d0"&gt;本年&lt;/div&gt;</span></span><br><span class="line">          <span class="string">&lt;div</span> <span class="string">class="schedule-d1"&gt;</span></span><br><span class="line">            <span class="string">&lt;span</span> <span class="string">id="p_span_year"</span> <span class="string">class="aside-span1"&gt;&lt;/span&gt;</span></span><br><span class="line">            <span class="string">&lt;span</span> <span class="string">class="aside-span2"&gt;&lt;/span&gt;</span></span><br><span class="line">            <span class="string">&lt;progress</span> <span class="string">max="365"</span> <span class="string">value="54"</span> <span class="string">id="pBar_year"&gt;&lt;/progress&gt;</span></span><br><span class="line">          <span class="string">&lt;/div&gt;</span></span><br><span class="line">        <span class="string">&lt;/div&gt;</span></span><br><span class="line">        <span class="string">&lt;div</span> <span class="string">class="schedule-r1"&gt;</span></span><br><span class="line">          <span class="string">&lt;div</span> <span class="string">class="schedule-d0"&gt;本月&lt;/div&gt;</span></span><br><span class="line">          <span class="string">&lt;div</span> <span class="string">class="schedule-d1"&gt;</span></span><br><span class="line">            <span class="string">&lt;span</span> <span class="string">id="p_span_month"</span> <span class="string">class="aside-span1"&gt;&lt;/span&gt;</span></span><br><span class="line">            <span class="string">&lt;span</span> <span class="string">class="aside-span2"&gt;&lt;/span&gt;</span></span><br><span class="line">            <span class="string">&lt;progress</span> <span class="string">max="30"</span> <span class="string">value="17"</span> <span class="string">id="pBar_month"&gt;&lt;/progress&gt;</span></span><br><span class="line">          <span class="string">&lt;/div&gt;</span></span><br><span class="line">        <span class="string">&lt;/div&gt;</span></span><br><span class="line">        <span class="string">&lt;div</span> <span class="string">class="schedule-r2"&gt;</span></span><br><span class="line">          <span class="string">&lt;div</span> <span class="string">class="schedule-d0"&gt;本周&lt;/div&gt;</span></span><br><span class="line">          <span class="string">&lt;div</span> <span class="string">class="schedule-d1"&gt;</span></span><br><span class="line">            <span class="string">&lt;span</span> <span class="string">id="p_span_week"</span> <span class="string">class="aside-span1"&gt;&lt;/span&gt;</span></span><br><span class="line">            <span class="string">&lt;span</span> <span class="string">class="aside-span2"&gt;&lt;/span&gt;</span></span><br><span class="line">            <span class="string">&lt;progress</span> <span class="string">max="7"</span> <span class="string">value="1"</span> <span class="string">id="pBar_week"&gt;&lt;/progress&gt;</span></span><br><span class="line">          <span class="string">&lt;/div&gt;</span></span><br><span class="line">        <span class="string">&lt;/div&gt;</span></span><br><span class="line">      <span class="string">&lt;/div&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="引入-lunar-js"><a href="#引入-lunar-js" class="headerlink" title="引入 lunar.js"></a>引入 lunar.js</h3><p>从<a target="_blank" rel="noopener" href="https://github.com/wvv8oo/lunar/blob/master/lib/chinese-lunar.js">链接地址</a>下载 lunar.js 文件放在 <code>source/js</code> 路径下</p>
+<h3 id="calendar-js"><a href="#calendar-js" class="headerlink" title="calendar.js"></a>calendar.js</h3><p>路径 <code>source/js</code> 下新建 <code>calendar.js</code> 文件</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// pjax适配</span></span><br><span class="line"><span class="variable language_">document</span>.<span class="title function_">addEventListener</span>(<span class="string">"DOMContentLoaded"</span>, <span class="function">() =&gt;</span> {</span><br><span class="line">    <span class="title function_">cardTimes</span>();</span><br><span class="line">    <span class="title function_">cardRefreshTimes</span>();</span><br><span class="line">}); <span class="comment">//第一次加载</span></span><br><span class="line"></span><br><span class="line"><span class="variable language_">document</span>.<span class="title function_">addEventListener</span>(<span class="string">"pjax:complete"</span>, <span class="function">() =&gt;</span> {</span><br><span class="line">    <span class="title function_">cardTimes</span>();</span><br><span class="line">    <span class="title function_">cardRefreshTimes</span>();</span><br><span class="line">}) <span class="comment">// pjax加载完成（切换页面）后再执行一次</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> now = <span class="keyword">new</span> <span class="title class_">Date</span>();</span><br><span class="line"><span class="keyword">var</span> year, month, week, date, dates, weekStr, monthStr;</span><br><span class="line"><span class="keyword">var</span> asideTime, asideDay, asideDayNum;</span><br><span class="line"><span class="keyword">var</span> animalYear, ganzhiYear, lunarMon, lunarDay;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 刷新时钟时间</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">cardRefreshTimes</span>(<span class="params"></span>) {</span><br><span class="line">    <span class="keyword">var</span> cardWidgetSchedule = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">"card-widget-schedule"</span>);</span><br><span class="line">    <span class="keyword">if</span> (cardWidgetSchedule) {</span><br><span class="line">        asideDay = (now - asideTime) / <span class="number">1e3</span> / <span class="number">60</span> / <span class="number">60</span> / <span class="number">24</span>;</span><br><span class="line">        cardWidgetSchedule.<span class="title function_">querySelector</span>(<span class="string">"#pBar_year"</span>).<span class="property">value</span> = asideDay;</span><br><span class="line">        cardWidgetSchedule.<span class="title function_">querySelector</span>(<span class="string">"#p_span_year"</span>).<span class="property">innerHTML</span> = (asideDay / <span class="number">365</span> * <span class="number">100</span>).<span class="title function_">toFixed</span>(<span class="number">2</span>) + <span class="string">"%"</span>;</span><br><span class="line">        cardWidgetSchedule.<span class="title function_">querySelector</span>(<span class="string">".schedule-r0 .schedule-d1 .aside-span2"</span>).<span class="property">innerHTML</span> = <span class="string">"还剩&lt;a&gt; "</span> + (<span class="number">365</span> - asideDay).<span class="title function_">toFixed</span>(<span class="number">0</span>) + <span class="string">" &lt;/a&gt;天"</span>;</span><br><span class="line">        cardWidgetSchedule.<span class="title function_">querySelector</span>(<span class="string">"#pBar_month"</span>).<span class="property">value</span> = date;</span><br><span class="line">        cardWidgetSchedule.<span class="title function_">querySelector</span>(<span class="string">"#pBar_month"</span>).<span class="property">max</span> = dates;</span><br><span class="line">        cardWidgetSchedule.<span class="title function_">querySelector</span>(<span class="string">"#p_span_month"</span>).<span class="property">innerHTML</span> = (date / dates * <span class="number">100</span>).<span class="title function_">toFixed</span>(<span class="number">2</span>) + <span class="string">"%"</span>;</span><br><span class="line">        cardWidgetSchedule.<span class="title function_">querySelector</span>(<span class="string">".schedule-r1 .schedule-d1 .aside-span2"</span>).<span class="property">innerHTML</span> = <span class="string">"还剩&lt;a&gt; "</span> + (dates - date) + <span class="string">" &lt;/a&gt;天"</span>;</span><br><span class="line">        cardWidgetSchedule.<span class="title function_">querySelector</span>(<span class="string">"#pBar_week"</span>).<span class="property">value</span> = week == <span class="number">0</span> ? <span class="number">7</span> : week;</span><br><span class="line">        cardWidgetSchedule.<span class="title function_">querySelector</span>(<span class="string">"#p_span_week"</span>).<span class="property">innerHTML</span> = ((week == <span class="number">0</span> ? <span class="number">7</span> : week) / <span class="number">7</span> * <span class="number">100</span>).<span class="title function_">toFixed</span>(<span class="number">2</span>) + <span class="string">"%"</span>;</span><br><span class="line">        cardWidgetSchedule.<span class="title function_">querySelector</span>(<span class="string">".schedule-r2 .schedule-d1 .aside-span2"</span>).<span class="property">innerHTML</span> = <span class="string">"还剩&lt;a&gt; "</span> + (<span class="number">7</span> - (week == <span class="number">0</span> ? <span class="number">7</span> : week)) + <span class="string">" &lt;/a&gt;天"</span>;</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"><span class="comment">// 侧边栏日历卡片</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">cardTimes</span>(<span class="params"></span>) {</span><br><span class="line">    year = now.<span class="title function_">getFullYear</span>();</span><br><span class="line">    month = now.<span class="title function_">getMonth</span>();</span><br><span class="line">    week = now.<span class="title function_">getDay</span>();</span><br><span class="line">    date = now.<span class="title function_">getDate</span>();</span><br><span class="line">    <span class="keyword">var</span> cardWidgetCalendar = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">"card-widget-calendar"</span>);</span><br><span class="line">    <span class="keyword">if</span> (cardWidgetCalendar) {</span><br><span class="line">        <span class="keyword">var</span> year_flag = year % <span class="number">4</span> == <span class="number">0</span> &amp;&amp; year % <span class="number">100</span> != <span class="number">0</span> || year % <span class="number">400</span> == <span class="number">0</span> ? <span class="literal">true</span> : <span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">switch</span> (week) {</span><br><span class="line">            <span class="keyword">case</span> <span class="number">0</span>: weekStr = <span class="string">"周日"</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">1</span>: weekStr = <span class="string">"周一"</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">2</span>: weekStr = <span class="string">"周二"</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">3</span>: weekStr = <span class="string">"周三"</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">4</span>: weekStr = <span class="string">"周四"</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">5</span>: weekStr = <span class="string">"周五"</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">6</span>: weekStr = <span class="string">"周六"</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="attr">default</span>: <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">"异常情况"</span>);</span><br><span class="line">        }</span><br><span class="line">        <span class="keyword">switch</span> (month) {</span><br><span class="line">            <span class="keyword">case</span> <span class="number">0</span>: monthStr = <span class="string">"1月"</span>; dates = <span class="number">31</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">1</span>: monthStr = <span class="string">"2月"</span>; dates = year_flag ? <span class="number">29</span> : <span class="number">28</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">2</span>: monthStr = <span class="string">"3月"</span>; dates = <span class="number">31</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">3</span>: monthStr = <span class="string">"4月"</span>; dates = <span class="number">30</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">4</span>: monthStr = <span class="string">"5月"</span>; dates = <span class="number">31</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">5</span>: monthStr = <span class="string">"6月"</span>; dates = <span class="number">30</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">6</span>: monthStr = <span class="string">"7月"</span>; dates = <span class="number">31</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">7</span>: monthStr = <span class="string">"8月"</span>; dates = <span class="number">31</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">8</span>: monthStr = <span class="string">"9月"</span>; dates = <span class="number">30</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">9</span>: monthStr = <span class="string">"10月"</span>; dates = <span class="number">31</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">10</span>: monthStr = <span class="string">"11月"</span>; dates = <span class="number">30</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">11</span>: monthStr = <span class="string">"12月"</span>; dates = <span class="number">31</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="attr">default</span>: <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">"异常情况"</span>);</span><br><span class="line">        }</span><br><span class="line">        <span class="keyword">var</span> week_first = (week + <span class="number">8</span> - date % <span class="number">7</span>) % <span class="number">7</span>;</span><br><span class="line">        <span class="keyword">var</span> count_days = <span class="string">""</span>;</span><br><span class="line">        <span class="keyword">var</span> count_flag = <span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">var</span> ds;</span><br><span class="line">        <span class="keyword">var</span> row_h = <span class="number">7</span> - week_first; <span class="comment">//第一行天数</span></span><br><span class="line">        <span class="keyword">var</span> row_f = (dates - row_h) % <span class="number">7</span>; <span class="comment">//最后一行的天数</span></span><br><span class="line">        <span class="keyword">var</span> rows = row_f == <span class="number">0</span> ? <span class="title class_">Math</span>.<span class="title function_">floor</span>((dates - row_h) / <span class="number">7</span>) + <span class="number">1</span> : <span class="title class_">Math</span>.<span class="title function_">floor</span>((dates - row_h) / <span class="number">7</span>) + <span class="number">2</span>;</span><br><span class="line">        <span class="keyword">var</span> calendar = cardWidgetCalendar.<span class="title function_">querySelector</span>(<span class="string">"#calendar-main"</span>);</span><br><span class="line">        <span class="keyword">var</span> gap = cardWidgetCalendar.<span class="title function_">querySelector</span>(<span class="string">"#calendar-date"</span>);</span><br><span class="line">        <span class="keyword">switch</span> (rows) {</span><br><span class="line">            <span class="keyword">case</span> <span class="number">4</span>: gap.<span class="property">style</span>.<span class="property">fontSize</span> = <span class="string">"36px"</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">5</span>: gap.<span class="property">style</span>.<span class="property">fontSize</span> = <span class="string">"48px"</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">6</span>: gap.<span class="property">style</span>.<span class="property">fontSize</span> = <span class="string">"64px"</span>; <span class="keyword">break</span>;</span><br><span class="line">            <span class="attr">default</span>: gap.<span class="property">style</span>.<span class="property">fontSize</span> = <span class="string">"64px"</span>;</span><br><span class="line">        }</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> r = <span class="number">0</span>; r &lt; rows; r++) {</span><br><span class="line">            <span class="keyword">if</span> (calendar.<span class="title function_">querySelector</span>(<span class="string">".calendar-r"</span> + r) == <span class="literal">null</span>) {</span><br><span class="line">                calendar.<span class="property">innerHTML</span> += <span class="string">"&lt;div class='calendar-r"</span> + r + <span class="string">"'&gt;&lt;/div&gt;"</span>;</span><br><span class="line">            }</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">let</span> d = <span class="number">0</span>; d &lt; <span class="number">7</span>; d++) {</span><br><span class="line">                <span class="keyword">if</span> (r == <span class="number">0</span> &amp;&amp; d == week_first) { <span class="comment">//本月第一天</span></span><br><span class="line">                    count_days = <span class="number">1</span>;</span><br><span class="line">                    count_flag = <span class="literal">true</span>;</span><br><span class="line">                }</span><br><span class="line">                <span class="keyword">if</span> (count_days == date) { <span class="comment">//当日日期</span></span><br><span class="line">                    ds = <span class="string">" class='now'"</span>;</span><br><span class="line">                } <span class="keyword">else</span> ds = <span class="string">""</span>;</span><br><span class="line">                <span class="keyword">if</span> (calendar.<span class="title function_">querySelector</span>(<span class="string">".calendar-r"</span> + r + <span class="string">" .calendar-d"</span> + d + <span class="string">" a"</span>) == <span class="literal">null</span>) {</span><br><span class="line">                    calendar.<span class="title function_">querySelector</span>(<span class="string">".calendar-r"</span> + r).<span class="property">innerHTML</span> += <span class="string">"&lt;div class='calendar-d"</span> + d + <span class="string">"'&gt;&lt;a"</span> + ds + <span class="string">"&gt;"</span> + count_days + <span class="string">"&lt;/a&gt;&lt;/div&gt;"</span>;</span><br><span class="line">                }</span><br><span class="line">                <span class="keyword">if</span> (count_days &gt;= dates) {</span><br><span class="line">                    count_days = <span class="string">""</span>;</span><br><span class="line">                    count_flag = <span class="literal">false</span>;</span><br><span class="line">                }</span><br><span class="line">                <span class="keyword">if</span> (count_flag) count_days += <span class="number">1</span>;</span><br><span class="line">            }</span><br><span class="line">        }</span><br><span class="line">        <span class="keyword">var</span> lunar = chineseLunar.<span class="title function_">solarToLunar</span>(<span class="keyword">new</span> <span class="title class_">Date</span>(year, month, date));</span><br><span class="line">        animalYear = chineseLunar.<span class="title function_">format</span>(lunar, <span class="string">"A"</span>); <span class="comment">//生肖属相</span></span><br><span class="line">        ganzhiYear = chineseLunar.<span class="title function_">format</span>(lunar, <span class="string">"T"</span>).<span class="title function_">slice</span>(<span class="number">0</span>, -<span class="number">1</span>); <span class="comment">//天干地支</span></span><br><span class="line">        lunarMon = chineseLunar.<span class="title function_">format</span>(lunar, <span class="string">"M"</span>); <span class="comment">//月份</span></span><br><span class="line">        lunarDay = chineseLunar.<span class="title function_">format</span>(lunar, <span class="string">"d"</span>); <span class="comment">//日期</span></span><br><span class="line">        <span class="keyword">var</span> anniversary = <span class="keyword">new</span> <span class="title class_">Date</span>(<span class="string">"2024/12/20 08:30:00"</span>);</span><br><span class="line">        <span class="keyword">var</span> countDown = <span class="title class_">Math</span>.<span class="title function_">floor</span>((anniversary - now) / <span class="number">1e3</span> / <span class="number">60</span> / <span class="number">60</span> / <span class="number">24</span>);</span><br><span class="line">        asideTime = <span class="keyword">new</span> <span class="title class_">Date</span>(<span class="keyword">new</span> <span class="title class_">Date</span>().<span class="title function_">getFullYear</span>() + <span class="string">"/01/01 00:00:00"</span>);	<span class="comment">// 侧边栏倒计时</span></span><br><span class="line">        asideDay = (now - asideTime) / <span class="number">1e3</span> / <span class="number">60</span> / <span class="number">60</span> / <span class="number">24</span>;</span><br><span class="line">        asideDayNum = <span class="title class_">Math</span>.<span class="title function_">floor</span>(asideDay);</span><br><span class="line">        <span class="keyword">var</span> asideWeekNum = ((week - asideDayNum % <span class="number">7</span>) &gt;= <span class="number">0</span>) ? (<span class="title class_">Math</span>.<span class="title function_">ceil</span>(asideDayNum / <span class="number">7</span>)) : (<span class="title class_">Math</span>.<span class="title function_">ceil</span>(asideDayNum / <span class="number">7</span>) + <span class="number">1</span>);</span><br><span class="line">        cardWidgetCalendar.<span class="title function_">querySelector</span>(<span class="string">"#calendar-week"</span>).<span class="property">innerHTML</span> = <span class="string">"第"</span> + asideWeekNum + <span class="string">"周&amp;nbsp;"</span> + weekStr; <span class="comment">//星期</span></span><br><span class="line">        cardWidgetCalendar.<span class="title function_">querySelector</span>(<span class="string">"#calendar-date"</span>).<span class="property">innerHTML</span> = date.<span class="title function_">toString</span>().<span class="title function_">padStart</span>(<span class="number">2</span>, <span class="string">'0'</span>); <span class="comment">//日期</span></span><br><span class="line">        cardWidgetCalendar.<span class="title function_">querySelector</span>(<span class="string">"#calendar-solar"</span>).<span class="property">innerHTML</span> = year + <span class="string">"年"</span> + monthStr + <span class="string">"&amp;nbsp;第"</span> + asideDay.<span class="title function_">toFixed</span>(<span class="number">0</span>) + <span class="string">"天"</span>; <span class="comment">//年份</span></span><br><span class="line">        cardWidgetCalendar.<span class="title function_">querySelector</span>(<span class="string">"#calendar-lunar"</span>).<span class="property">innerHTML</span> = ganzhiYear + animalYear + <span class="string">"年&amp;nbsp;"</span> + lunarMon + lunarDay; <span class="comment">//农历</span></span><br><span class="line">        <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">"schedule-days"</span>).<span class="property">innerHTML</span> = countDown; <span class="comment">//农历</span></span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="calendar-css"><a href="#calendar-css" class="headerlink" title="calendar.css"></a>calendar.css</h3><p>路径 <code>source/css</code> 下新建 <code>calendar.css</code> 文件</p>
+<p>css 代码不一定全（比如部分公共样式），遗漏的可以自行 F12 调试补充</p>
+</article><div class="post-copyright"><div class="post-copyright__author_group"><div class="post-copyright__author_img"><img class="post-copyright__author_img_front" src="https://q1.qlogo.cn/g?b=qq&amp;nk=648226460&amp;s=640"></div><div class="post-copyright__author_name">李小白</div><div class="post-copyright__author_desc"></div></div><div class="post-tools" id="post-tools"><div class="post-tools-left"><div id="quit-box" onclick="RemoveRewardMask()"></div><div class="post-reward"><div class="reward-button" title="赞赏作者" onclick="AddRewardMask()"><i class="solitude fas fa-heart"></i>赞赏作者</div><div class="reward-main"><ul class="reward-all"><span class="reward-title">感谢您的赞赏</span><ul class="reward-group"><li class="reward-item"><a href="/"><img class="post-qr-code-img nolazyload" src="https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/d5a7764e68ccb830b9bafe96369079bce72f629e689511306be98a0fade4a560da9a3aca5161d575e44e40f661113546?pictype=scale&amp;from=30113&amp;version=3.3.3.3&amp;fname=wx.png&amp;size=1000" alt="微信" style="border-color: undefined"></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="/"><img class="post-qr-code-img nolazyload" src="https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/402707b32622977bd2bf38112b3e53dfc9dda5f6c6e7753c741c1215df9d568f4797e67857297174270b1f3fb0008368?pictype=scale&amp;from=30113&amp;version=3.3.3.3&amp;fname=zfb.png&amp;size=1000" alt="支付宝" style="border-color: undefined"></a><div class="post-qr-code-desc">支付宝</div></li></ul><a class="reward-main-btn" href="/about/"><div class="reward-text">赞赏名单</div><div class="reward-dec">由于您的支持，我才能够实现写作的价值。</div></a></ul></div></div><script>function RemoveRewardMask() {
+    let rewardMainElements = document.querySelectorAll(".reward-main");
+    let quitBoxElement = document.querySelector("#quit-box");
+
+    rewardMainElements.forEach(element => {
+        element.style.display = "none";
+    });
+
+    if (quitBoxElement) {
+        quitBoxElement.style.display = "none";
+    }
+}
+
+function AddRewardMask() {
+    let rewardMainElements = document.querySelectorAll(".reward-main");
+    let quitBoxElement = document.querySelector("#quit-box");
+
+    rewardMainElements.forEach(element => {
+        element.style.display = "flex";
+    });
+
+    if (quitBoxElement) {
+        quitBoxElement.style.display = "flex";
+    }
+}</script></div></div><div class="social-share"><a class="social-share-ico icon-qq" target="_blank" rel="noopener" href="https://connect.qq.com/widget/shareqq/index.html?url=http%3A%2F%2Fexample.com%2Fposts%2F14af%2F&amp;title=%E4%BE%A7%E8%BE%B9%E6%A0%8F%E6%B7%BB%E5%8A%A0%E6%97%A5%E5%8E%86%E7%BB%84%E4%BB%B6&amp;desc=undefined&amp;summary=undefined&amp;site=%E4%BE%A7%E8%BE%B9%E6%A0%8F%E6%B7%BB%E5%8A%A0%E6%97%A5%E5%8E%86%E7%BB%84%E4%BB%B6&amp;pics=https%3A%2F%2Fpicabstract-preview-ftn.weiyun.com%2Fftn_pic_abs_v3%2F53cbe135ea463ecf031f166396fe1a766b932c3315006fd2727deeb9aecddcb014be287c8a6e02d2b826688b579e4dc7%3Fpictype%3Dscale%26from%3D30113%26version%3D3.3.3.3%26fname%3Dp0cc71.png%26size%3D1000" title="分享到QQ"><i class="solitude fab fa-qq"></i></a><a class="social-share-ico icon-telegram" target="_blank" rel="noopener" href="https://t.me/share/url?url=http%3A%2F%2Fexample.com%2Fposts%2F14af%2F&amp;text=%E4%BE%A7%E8%BE%B9%E6%A0%8F%E6%B7%BB%E5%8A%A0%E6%97%A5%E5%8E%86%E7%BB%84%E4%BB%B6" title="分享到Telegram"><i class="solitude fab fa-telegram"></i></a><div class="social-share-ico icon-link" onclick="utils.copy(&quot;http://example.com/posts/14af/&quot;)" title="复制文章链接"><i class="solitude fas fa-link"></i></div></div><div class="post-copyright__notice"><span class="post-copyright-info">本文是原创文章，采用<a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a>协议，完整转载请注明来自<a href="/">李小白</a></span></div></div><div class="post-tools-right"><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Hexo/"><span class="tags-punctuation"><i class="solitude fas fa-hashtag"></i>Hexo<span class="tagsPageCount">4</span></span></a><a class="post-meta__tags" href="/tags/%E5%8D%9A%E5%AE%A2%E9%85%8D%E7%BD%AE/"><span class="tags-punctuation"><i class="solitude fas fa-hashtag"></i>博客配置<span class="tagsPageCount">4</span></span></a><a class="post-meta__tags" href="/tags/%E6%95%99%E7%A8%8B/"><span class="tags-punctuation"><i class="solitude fas fa-hashtag"></i>教程<span class="tagsPageCount">4</span></span></a></div></div></div><nav class="needEndHide pagination-post" id="pagination"><div class="next-post pull-full"><a href="/posts/6461/"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Github Action实现友链状态检测</div></div></a></div></nav>
+        <div class="relatedPosts">
+            <div class="headline">
+                <i class="solitude fas fa-star"></i>
+                <span>喜欢这篇的人也看了</span>
+                <div class="relatedPosts-link">
+                    <a onclick="event.preventDefault(); toRandomPost();" href="javascript:void(0);" rel="external nofollow" data-pjax-state="">随便逛逛</a>
+                </div>
+            </div>
+            <div class="relatedPosts-list">
+            <div>
+                <a href="/posts/6461/" title="Github Action实现友链状态检测">
+                    <img class="cover" src="https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/bc9476f6447b54574652a3ba9ab787d806e1dcaf76c1d0e036d5f27b0d82f4aaafe9037ce45e7910d250cc0987456fe1?pictype=scale&amp;from=30113&amp;version=3.3.3.3&amp;fname=p0%283%29.png&amp;size=1000" alt="cover">
+                    <div class="content is-center">
+                        <div class="title">Github Action实现友链状态检测</div>
+                    </div>
+                </a>
+            </div>
+            <div>
+                <a href="/posts/589e/" title="在侧边栏添加个性定位欢迎信息 2.0">
+                    <img class="cover" src="https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/2e4e53bcd0c02e54546fb387dd8b56122650332c479f9a4bc812bbe6b5229bb3eb4dc56a31ced1d384f0d82be58bc979?pictype=scale&amp;from=30113&amp;version=3.3.3.3&amp;fname=p018cb.png&amp;size=1000" alt="cover">
+                    <div class="content is-center">
+                        <div class="title">在侧边栏添加个性定位欢迎信息 2.0</div>
+                    </div>
+                </a>
+            </div>
+            </div>
+        </div><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="solitude fas fa-comment"></i><span> 评论</span><span class="count"> (<span class="twikoo-count"><i class="solitude fas fa-spinner fa-spin"></i></span>)</span></div></div><div class="comment-wrap"><div id="twikoo-wrap"></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><div class="top-group"><div class="sayhi" id="sayhi" onclick="sco.changeWittyWord()"></div></div></div><div class="avatar"><img alt="头像" src="https://q1.qlogo.cn/g?b=qq&amp;nk=648226460&amp;s=640"></div><div class="description"></div><div class="bottom-group"><span class="left"><div class="name">李小白</div><div class="desc">一人一酒一明月，<br>半醉半醒半浮生。</div></span><div class="social-icons is-center"><a class="social-icon" target="_blank" rel="noopener" href="https://github.com/qianmo0021" title="Github"><i class="solitude  fab fa-github"></i></a><a class="social-icon" target="_blank" rel="noopener" href="https://space.bilibili.com/39736860" title="Bilibili"><i class="solitude  fab fa-bilibili"></i></a></div></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="solitude fas fa-bars"></i><span>文章目录</span></div><div class="toc-content" id="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BE%A7%E8%BE%B9%E6%A0%8F%E6%B7%BB%E5%8A%A0%E6%97%A5%E5%8E%86%E7%BB%84%E4%BB%B6"><span class="toc-text">侧边栏添加日历组件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B0%E5%BB%BA-widget-yml"><span class="toc-text">新建 widget.yml</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E5%85%A5-lunar-js"><span class="toc-text">引入 lunar.js</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#calendar-js"><span class="toc-text">calendar.js</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#calendar-css"><span class="toc-text">calendar.css</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="solitude fas fa-map"></i><span>最近发布</span></div><div class="aside-list"><a class="aside-list-item" href="/posts/14af/" title="侧边栏添加日历组件"><div class="thumbnail"><img alt="侧边栏添加日历组件" src="https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/53cbe135ea463ecf031f166396fe1a766b932c3315006fd2727deeb9aecddcb014be287c8a6e02d2b826688b579e4dc7?pictype=scale&amp;from=30113&amp;version=3.3.3.3&amp;fname=p0cc71.png&amp;size=1000"></div><div class="content"><span class="title" href="/posts/14af/" title="侧边栏添加日历组件">侧边栏添加日历组件</span><span class="categories" href="/posts/14af/">教程</span></div></a><a class="aside-list-item" href="/posts/6461/" title="Github Action实现友链状态检测"><div class="thumbnail"><img alt="Github Action实现友链状态检测" src="https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/bc9476f6447b54574652a3ba9ab787d806e1dcaf76c1d0e036d5f27b0d82f4aaafe9037ce45e7910d250cc0987456fe1?pictype=scale&amp;from=30113&amp;version=3.3.3.3&amp;fname=p0%283%29.png&amp;size=1000"></div><div class="content"><span class="title" href="/posts/6461/" title="Github Action实现友链状态检测">Github Action实现友链状态检测</span><span class="categories" href="/posts/6461/">教程</span></div></a><a class="aside-list-item" href="/posts/589e/" title="在侧边栏添加个性定位欢迎信息 2.0"><div class="thumbnail"><img alt="在侧边栏添加个性定位欢迎信息 2.0" src="https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/2e4e53bcd0c02e54546fb387dd8b56122650332c479f9a4bc812bbe6b5229bb3eb4dc56a31ced1d384f0d82be58bc979?pictype=scale&amp;from=30113&amp;version=3.3.3.3&amp;fname=p018cb.png&amp;size=1000"></div><div class="content"><span class="title" href="/posts/589e/" title="在侧边栏添加个性定位欢迎信息 2.0">在侧边栏添加个性定位欢迎信息 2.0</span><span class="categories" href="/posts/589e/">教程</span></div></a><a class="aside-list-item" href="/posts/fb3c/" title="如何优雅的使用Github Action服务来将Hexo部署到Github Pages"><div class="thumbnail"><img alt="如何优雅的使用Github Action服务来将Hexo部署到Github Pages" src="https://picabstract-preview-ftn.weiyun.com/ftn_pic_abs_v3/819e000a34a53164513c50bc059b6f00ad6c12e814cdef7734cdf8b5b7da59babfdcc50b4895c5fb5ebabb0f321c88f3?pictype=scale&amp;from=30113&amp;version=3.3.3.3&amp;fname=p0%206.png&amp;size=1000"></div><div class="content"><span class="title" href="/posts/fb3c/" title="如何优雅的使用Github Action服务来将Hexo部署到Github Pages">如何优雅的使用Github Action服务来将Hexo部署到Github Pages</span><span class="categories" href="/posts/fb3c/">教程</span></div></a></div></div></div></div></main><footer id="footer"><div id="footer_deal"><a class="deal_link" target="_blank" rel="noopener" href="https://github.com/qianmo0021" title="Github"><i class="solitude  fab fa-github"></i></a><a class="deal_link" href="mailto:648226460@qq.com" title="Mail"><i class="solitude  far fa-envelope"></i></a><div><div class="nolazyload footer_mini_logo" id="footer_mini_logo" title="返回顶部" onclick="sco.toTop()"><img src="/img/logos.svg" alt="返回顶部"></div></div><a class="deal_link" target="_blank" rel="noopener" href="https://space.bilibili.com/39736860" title="Bilibili"><i class="solitude  fab fa-bilibili"></i></a><a class="deal_link" target="_blank" rel="noopener" href="https://v.douyin.com/" title="Douyin"><i class="solitude  fab fa-tiktok"></i></a></div><div><div id="st-footer"><div class="footer-group"><h3 class="footer-title">导航</h3><div class="footer-links"><a class="footer-item" href="/archives/" title="归档">归档</a><a class="footer-item" href="/categories/" title="分类">分类</a><a class="footer-item" href="/tags/" title="标签">标签</a></div></div><div class="footer-group"><h3 class="footer-title">协议</h3><div class="footer-links"><a class="footer-item" href="/cookies/" title="Cookies">Cookies</a><a class="footer-item" href="/privacy/" title="隐私协议">隐私协议</a><a class="footer-item" href="/copyright/" title="版权协议">版权协议</a></div></div><div class="footer-group"><h3 class="footer-title">支持</h3><div class="footer-links"><a class="footer-item" href="/about/" title="打赏记录">打赏记录</a></div></div><div class="footer-group"><h3 class="footer-title">服务</h3><div class="footer-links"><a class="footer-item" target="_blank" rel="noopener" href="https://www.foreverblog.cn/" title="十年之约">十年之约</a><a class="footer-item" target="_blank" rel="noopener" href="https://dh.lxb.icu" title="导航页面">导航页面</a></div></div><div class="footer-group"><div class="footer-title-group"><h3 class="footer-title">友链</h3><button class="random-friends-btn" onclick="randomLinksList()" title="友链"><i class="solitude fas fa-arrows-rotate"></i></button></div><div class="footer-links" id="friend-links-in-footer"></div></div></div></div><div id="footer-bar"><div class="footer-bar-links"><div class="footer-bar-left"><div class="copyright">© 2025 By<a class="footer-bar-link" href="/" title="李小白">李小白</a></div><div class="beian-group"></div></div><div><div class="footer-bar-right"><a class="footer-bar-link" href="/atom.xml" title="">RSS</a><a class="footer-bar-link" target="_blank" rel="noopener" href="https://github.com/everfu/hexo-theme-solitude/blob/main/LICENSE" title=""><i class="solitude fas fa-copyright"></i><i class="solitude fab fa-creative-commons-by"></i><i class="solitude fab fa-creative-commons-nc"></i><i class="solitude fab fa-creative-commons-nd"></i></a></div></div></div></div><div><div class="comment-barrage needEndHide"></div></div></footer></div><div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="solitude fas fa-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="solitude fas fa-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="solitude fas fa-arrows-rotate"></i></div><div class="rightMenu-item" id="menu-top"><i class="solitude fas fa-arrow-up"></i></div></div><div class="rightMenu-group rightMenu-line rightMenuPlugin"><div class="rightMenu-item" id="menu-copytext"><i class="solitude fas fa-clone"></i><span>复制选中文本</span></div><div class="rightMenu-item" id="menu-pastetext"><i class="solitude fas fa-clipboard"></i><span>粘贴文本</span></div><div class="rightMenu-item" id="menu-commenttext"><i class="solitude fas fa-comment-medical"></i><span>引用到评论</span></div><div class="rightMenu-item" id="menu-newwindow"><i class="solitude far fa-window-maximize"></i><span>新窗口打开</span></div><div class="rightMenu-item" id="menu-copylink"><i class="solitude fas fa-link"></i><span>复制链接地址</span></div><div class="rightMenu-item" id="menu-copyimg"><i class="solitude fas fa-clone"></i><span>复制此图片</span></div><div class="rightMenu-item" id="menu-downloadimg"><i class="solitude fas fa-cloud-arrow-down"></i><span>下载此图片</span></div><div class="rightMenu-item" id="menu-search"><i class="solitude fas fa-magnifying-glass"></i><span>站内搜索</span></div><div class="rightMenu-item" id="menu-music-toggle"><i class="solitude fas fa-play"></i><span>播放音乐</span></div><div class="rightMenu-item" id="menu-music-back"><i class="solitude fas fa-backward"></i><span>切换到上一首</span></div><div class="rightMenu-item" id="menu-music-forward"><i class="solitude fas fa-forward"></i><span>切换到下一首</span></div><div class="rightMenu-item" id="menu-music-copyMusicName"><i class="solitude fas fa-clone"></i><span>复制歌名</span></div></div><div class="rightMenu-group rightMenu-line rightMenuOther"><div class="rightMenu-item" id="menu-randomPost" onclick="toRandomPost()||rm.hideRightMenu()"><i class="solitude fas fa-tower-broadcast"></i><span>随机文章</span></div><div class="rightMenu-item" onclick="pjax.loadUrl('/categories/')||rm.hideRightMenu()"><i class="solitude fas fa-clone"></i><span>全部分类</span></div><div class="rightMenu-item" onclick="pjax.loadUrl('/tags/')||rm.hideRightMenu()"><i class="solitude fas fa-tags"></i><span>全部标签</span></div></div><div class="rightMenu-group rightMenu-line rightMenuOther"><div class="rightMenu-item" id="menu-commentBarrage" onclick="sco.switchCommentBarrage()"><i class="solitude fas fa-comment"></i><span class="menu-commentBarrage-text">关闭热评</span></div><div class="rightMenu-item" id="menu-darkmode" onclick="sco.switchDarkMode()"><i class="solitude fas fa-circle-half-stroke"></i><span class="menu-darkmode-text">深色模式</span></div><div class="rightMenu-item" id="menu-translate"><i class="solitude fas fa-language"></i><span>轉為繁體</span></div></div></div><div id="rightmenu-mask"></div></div><div><!-- Critical scripts loaded synchronously--><script src="/js/utils.js?v=3.0.21"></script><script src="/js/main.js?v=3.0.21"></script><!-- Non-critical scripts loaded asynchronously--><script async="" src="/js/third_party/waterfall.min.js?v=3.0.21"></script><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script><!-- Feature-specific scripts loaded asynchronously--><script defer="" src="/js/third_party/universe.min.js?v=3.0.21"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  if (typeof dark === 'function') dark();
+});
+</script><script defer="" src="/js/tw_cn.js?v=3.0.21"></script><!-- UI enhancement scripts--><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.iife.min.js"></script><script defer="" src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js"></script><!-- Music player scripts--><script>var meting_api = 'https://meting.qjqq.cn/?server=:server&type=:type&id=:id&auth=:auth&r=:r';</script><script defer="" src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script><script defer="" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><!-- Cover color processing scripts--><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+utils.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+</script><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!-- Search functionality--><!-- Right menu functionality--><script defer="" src="/js/right_menu.js?v=3.0.21"></script><script src="/js/customize.js"></script><script defer="" pjax="" src="/js/custom.js"></script><div class="js-pjax"><script>(() => {
+    const getCount = () => {
+        const ele = document.querySelectorAll('.twikoo-count')
+        if (!ele) return
+        twikoo.getCommentsCount({
+            envId: 'https://twikoo.siyouyun.eu.org/',
+            region: '',
+            urls: [window.location.pathname],
+            includeReply: false
+        }).then(res => {
+            ele.forEach(item => item.textContent = res[0].count)
+        }).catch(err => {
+            console.error(err)
+        })
+    }
+    const init = () => {
+        twikoo.init(Object.assign({
+            el: '#twikoo-wrap',
+            envId: 'https://twikoo.siyouyun.eu.org/',
+            region: '',
+            path: window.location.pathname,
+            onCommentLoaded: () => {
+                GLOBAL_CONFIG.lightbox && utils.lightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+            }
+        }, null))
+
+         && getCount()
+        sco.owoBig({
+            body: '.OwO-body',
+            item: '.OwO-items li'
+        })
+
+        true && barrageTwikoo()
+    }
+
+    const loadTwikoo = () => {
+        if (typeof twikoo === 'object') setTimeout(init,0)
+        else utils.getScript('https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js').then(init)
+    }
+
+    if ('Twikoo' === 'Twikoo' || true) {
+        if (true) utils.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+        else loadTwikoo()
+    } else {
+        window.loadTwoComment = loadTwikoo
+    }
+})()
+</script><script>async function barrageTwikoo() {
+    await fetch("https://twikoo.siyouyun.eu.org/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            event: "COMMENT_GET",
+            accessToken: "",
+            url: window.location.pathname
+        })
+    }).then(async res => {
+        if (!res.ok) throw new Error("HTTP error! status: " + res.status)
+        const data = await res.json();
+        const init = () => {
+            initializeCommentBarrage((data.data).map(item => Object.assign({
+                content: item.comment,
+                nick: item.nick,
+                mailMd5: item.mailMd5,
+                id: item.id
+            })))
+        }
+        if (typeof initializeCommentBarrage === "undefined") await utils.getScript('/js/third_party/barrage.min.js?v=3.0.21').then(init)
+        else init()
+    }).catch(error => console.error("An error occurred while fetching comments: ", error))
+}</script></div></div><script>const links = [{"name":"Hexo","link":"https://hexo.io/zh-cn/"},{"name":"张洪Heo","link":"https://blog.zhheo.com/"},{"name":"Solitude","link":"https://solitude.js.org/"},{"name":"❖星港◎Star☆","link":"https://blog.starsharbor.com"},{"name":"Mo的记事簿","link":"https://blog.xiowo.net/"}]
+const randomText = '点击前往按钮进入随机一个友链，不保证跳转网站的安全性和可用性。本次随机到的是本站友链：⌈ ${name} ⌋'
+function travelling() {
+    const link = links[utils.randomNum(links.length)];
+    Snackbar.show({
+        text: randomText.replace(/\$\{name}/,link.name),
+        duration: 8000,
+        pos: 'top-center',
+        actionText: '前往',
+        onActionClick: function(element) {
+            element.style.opacity = 0;
+            window.open(link.link, '_blank');
+        }
+    });
+}
+</script><script>function randomLinksList() {
+    const linkcard = document.getElementById('friend-links-in-footer');
+    if (linkcard == null) return;
+
+    let data = '';
+    let linksCopy = [...links];
+    let count = Math.min(3, linksCopy.length);
+
+    for (let i = 0; i < count; i++) {
+        let index = utils.randomNum(linksCopy.length);
+        const {link, name} = linksCopy[index];
+        data += `<a class="footer-item" href="${link}" target="_blank" rel="noopener noreferrer nofollow">${name}</a>`;
+        linksCopy.splice(index, 1);
+    }
+
+    linkcard.innerHTML = data + '<a class="footer-item" href="/links/">更多</a>';
+}</script><!-- pjax--><script>let pjax = null;
+
+function initPjax() {
+    if (typeof Pjax === 'undefined') {
+        console.warn('Pjax is not loaded yet, retrying...');
+        setTimeout(initPjax, 100);
+        return;
+    }
+
+    pjax = new Pjax({
+        elements: 'a:not([target="_blank"])',
+        selectors: ["title","#body-wrap","#site-config","meta[name=\"description\"]",".js-pjax","meta[property^=\"og:\"]","#config-diff",".rs_show",".rs_hide"],
+        cacheBust: false,
+        analytics: false,
+        scrollRestoration: false
+    })
+
+    // 将 pjax 实例挂载到全局
+    window.pjax = pjax;
+
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+        const newScript = document.createElement('script')
+        const content = item.text || item.textContent || item.innerHTML || ""
+        Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+        newScript.appendChild(document.createTextNode(content))
+        item.parentNode.replaceChild(newScript, item)
+    })
+
+    document.addEventListener('pjax:complete', () => {
+        window.refreshFn()
+
+        document.querySelectorAll('script[data-pjax]').forEach(item => {
+            const newScript = document.createElement('script')
+            const content = item.text || item.textContent || item.innerHTML || ""
+            Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+            newScript.appendChild(document.createTextNode(content))
+            item.parentNode.replaceChild(newScript, item)
+        })
+
+        GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+    })
+
+    document.addEventListener('pjax:error', (e) => {
+        if (e.request.status === 404) {
+            pjax.loadUrl('/404.html')
+        }
+    })
+}
+
+// 初始化 Pjax
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPjax);
+} else {
+    initPjax();
+}</script><!-- google adsense--><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><button class="search-close-button"><i class="solitude fas fa-xmark"></i></button></nav><div class="search-wrap"><div class="search-box"><input class="search-box-input" id="search-input" type="text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="输入关键词快速查找"></div><div id="search-results"><div id="search-hits"></div></div><div id="search-pagination"></div><div id="search-tips"></div></div></div><div id="search-mask"></div></div><script src="/js/search/local.js?v=3.0.21"></script><div><div class="needEndHide" id="nav-music"><div id="nav-music-hoverTips"><i class="music-control-btn fas fa-backward-step" id="music-prev" onclick="sco.musicSkipBack()"></i><i class="music-control-btn fas fa-pause" id="music-pause" onclick="sco.musicToggle()"></i><i class="music-control-btn fas fa-play" id="music-play" onclick="sco.musicToggle()"></i><i class="music-control-btn fas fa-forward-step" id="music-next" onclick="sco.musicSkipForward()"></i></div><meting-js id="5144842535" server="netease" type="playlist" mutex="true" preload="none" theme="var(--efu-main)" data-lrctype="0" order="random" volume="0.8"></meting-js></div></div></body></html>
+        <script>
+            const posts = ["posts/14af/","posts/6461/","posts/589e/","posts/fb3c/"];
+            function toRandomPost() {
+                const randomPost = posts[Math.floor(Math.random() * posts.length)];
+                pjax.loadUrl(GLOBAL_CONFIG.root + randomPost);
+            }
+        </script>
